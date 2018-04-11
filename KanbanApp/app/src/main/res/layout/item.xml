@@ -3,69 +3,100 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraint"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="165dp"
-    android:background="#fff196">
+    android:background="@color/colorPrimary">
 
-    <TextView
-        android:id="@+id/nombre"
-        android:layout_width="358dp"
-        android:layout_height="49dp"
-
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="149dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginTop="16dp"
-        android:text="Item1"
-        android:textAlignment="textEnd"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:layout_marginStart="8dp"
+        android:background="#fff196"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints"></TextView>
-
-    <RelativeLayout
-        android:layout_width="366dp"
-        android:layout_height="70dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="80dp"
-        android:background="@android:color/background_light"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        tools:layout_editor_absoluteY="8dp">
 
         <TextView
-            android:id="@+id/descripcion"
-            android:layout_width="342dp"
-            android:layout_height="40dp"
+            android:id="@+id/nombre"
+            android:layout_width="match_parent"
+            android:layout_height="49dp"
 
-            android:layout_below="@+id/textView"
-            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="16dp"
             android:text="Item1"
+            android:textAlignment="textEnd"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            android:textSize="14sp"
+            android:textSize="30sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="MissingConstraints"></TextView>
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignStart="@+id/descripcion"
-            android:text="Descripción:"
-            android:textColor="@android:color/background_dark" />
+        <ImageButton
+            android:id="@+id/eliminarTarea"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="37dp"
+            android:layout_height="34dp"
+            android:src="@android:drawable/ic_delete"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </RelativeLayout>
+        <ImageButton
+            android:id="@+id/editTarea"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="35dp"
+            android:layout_height="26dp"
+            android:layout_marginTop="40dp"
+            android:src="@android:drawable/ic_menu_edit"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="0dp" />
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="164dp"
-        android:background="@android:color/darker_gray"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="72dp"
+            android:background="@android:color/background_light"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
+            <TextView
+                android:id="@+id/descripcion"
+                android:layout_width="342dp"
+                android:layout_height="40dp"
+
+                android:layout_below="@+id/textView"
+                android:layout_centerHorizontal="true"
+                android:text="Item1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="MissingConstraints"></TextView>
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignStart="@+id/descripcion"
+                android:text="Descripción:"
+                android:textColor="@android:color/background_dark" />
+
+        </RelativeLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_below="@+id/textView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="164dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="0dp">
+
+        </android.support.constraint.ConstraintLayout>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>
