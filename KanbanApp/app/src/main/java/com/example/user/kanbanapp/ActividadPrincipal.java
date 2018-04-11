@@ -4,51 +4,70 @@ package com.example.user.kanbanapp;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
+
 
 public class ActividadPrincipal extends AppCompatActivity {
-    ArrayList<String> arrayList;
-    ArrayAdapter<String> arrayAdapter;
-    ItemAdapter adapter;
+
+    TareaAdapter adapter;
+    EditText editText;
+    EditText editText2;
+    List<Tarea> itemList;
+    DatosVentanas vd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_actividad_principal);
+
+        itemList=new ArrayList<Tarea>();
+        adapter=new TareaAdapter(this,R.layout.item, (ArrayList<Tarea>) itemList);
+
         ListView lv = (ListView) findViewById(R.id.listView);
-        arrayList= new ArrayList<>();
-        adapter = new ItemAdapter(this, arrayList);
         lv.setAdapter(adapter);
-        OnclickDelButton(R.id.button);
+
+        editText=(EditText)findViewById(R.id.nombreTarea);
+        editText2=(EditText)findViewById(R.id.descripcionTarea);
+
+        verificarParaInsertar();
+
+        Button MiButton = (Button) findViewById(R.id.button);
+
+        //Programamos el evento onclick
+
+        MiButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+
+            public void onClick(View arg0) {
+                Intent intento = new Intent(getApplicationContext(), IngresoItem.class);
+                startActivity(intento);
+            }
+
+        });
+
+
 
     }
-    public void OnclickDelButton(int ref) {
 
-        // Ejemplo  OnclickDelButton(R.id.MiButton);
-        // 1 Doy referencia al Button
-        View view =findViewById(ref);
-        Button miButton = (Button) view;
-        //  final String msg = miButton.getText().toString();
-        // 2.  Programar el evento onclick
-        miButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                // if(msg.equals("Texto")){Mensaje("Texto en el botón ");};
-                switch (v.getId()) {
+    private void verificarParaInsertar() {
+        vd = DatosVentanas.getInstance();
+        for(int i = 0; i<vd.getBacklog().size(); i++){
+            itemList.add(vd.getBacklog().get(i));
+        }
 
-                    case R.id.button:
-                        Intent intento = new Intent(getApplicationContext(), IngresoItem.class);
-                        startActivity(intento);
-                        //adapter.addItem("AAA");
+    }
 
-                        break;
-                    default:break; }// fin de casos
-            }// fin del onclick
-        });
-    }// fin de OnclickDelButton
+
+    public void Mensaje(String msg){
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();};Intent intento = new Intent();
+
 }
