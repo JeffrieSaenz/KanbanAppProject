@@ -3,6 +3,7 @@ package com.example.user.kanbanapp;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -91,29 +92,40 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
         OnclickDelButton(R.id.btnAgregar);
     }
 
+
     public void OnclickDelButton(int ref) {
-        View view =findViewById(ref);
+        View view = findViewById(ref);
         Button btnAgregar = (Button) view;
 
-        btnAgregar.setOnClickListener(new View.OnClickListener(){
+        btnAgregar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatosVentanas dv = DatosVentanas.getInstance();
+                /*
+                Backlog b = Backlog.getInstance();
+                Intent callingIntent = getIntent();
+                Integer pos = callingIntent.getIntExtra("pos",0);*/
+                Intent callingIntent = getIntent();
+                Integer pos = callingIntent.getIntExtra("pos", 0);
                 switch (v.getId()) {
 
                     case R.id.btnAgregar:
                         //Se agrega la tarea al Backlog
+                        //Main_Content mc = (Main_Content)b.vpa.getItem(pos);
                         dv.agregarTareaBacklog(
                                 new Tarea(
                                         txtNombre.getText().toString(),
                                         txtDescripcion.getText().toString())
+                                , pos
                         );
                         Intent intento = new Intent(getApplicationContext(), Backlog.class);
                         startActivity(intento);
 
 
                         break;
-                    default:break; }// fin de casos
+                    default:
+                        break;
+                }// fin de casos
             }// fin del onclick
         });
     }// fin de OnclickDelButto

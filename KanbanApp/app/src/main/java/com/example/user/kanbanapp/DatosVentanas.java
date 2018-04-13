@@ -8,26 +8,34 @@ import java.util.ArrayList;
 
 public class DatosVentanas {
 
-    private ArrayList<Tarea> backlog = new ArrayList<>();
+    private ArrayList<ArrayList<Tarea>> backlog = new ArrayList<>();
 
     private static DatosVentanas instance = null;
 
-    protected DatosVentanas() {}
+    protected DatosVentanas() {
+        // agregaInicial();
+    }
+
+    public void agregaInicial() {
+        this.backlog.add(new ArrayList<Tarea>());
+    }
 
     public static DatosVentanas getInstance() {
-        if(instance == null) {instance = new DatosVentanas(); }
+        if (instance == null) {
+            instance = new DatosVentanas();
+        }
         return instance;
     }
 
-    public ArrayList<Tarea> getBacklog() {
+    public ArrayList<ArrayList<Tarea>> getBacklog() {
         return backlog;
     }
 
-    public void setBacklog(ArrayList<Tarea> backlog) {
+    public void setBacklog(ArrayList<ArrayList<Tarea>> backlog) {
         this.backlog = backlog;
     }
 
-    public void agregarTareaBacklog(Tarea a){
-        this.backlog.add(a);
+    public void agregarTareaBacklog(Tarea a, Integer i) {
+        this.backlog.get(i).add(a);
     }
 }// fin de la clase de variables globales

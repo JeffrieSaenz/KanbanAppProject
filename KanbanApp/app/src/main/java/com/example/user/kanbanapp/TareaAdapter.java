@@ -3,6 +3,7 @@ package com.example.user.kanbanapp;
 /**
  * Created by User on 10/04/2018.
  */
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 
 public class TareaAdapter extends ArrayAdapter<Tarea> {
@@ -30,21 +32,18 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
         View row = convertView;
         ViewHolder holder = null;
 
-        if(row == null)
-        {
-            LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+        if (row == null) {
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new ViewHolder();
-            holder.textView1 = (TextView)row.findViewById(R.id.nombre);
-            holder.textView2 = (TextView)row.findViewById(R.id.descripcion);
+            holder.textView1 = (TextView) row.findViewById(R.id.nombre);
+            holder.textView2 = (TextView) row.findViewById(R.id.descripcion);
             //holder.textView3 = (TextView)row.findViewById(R.id.text3);
 
             row.setTag(holder);
-        }
-        else
-        {
-            holder = (ViewHolder)row.getTag();
+        } else {
+            holder = (ViewHolder) row.getTag();
         }
 
         Tarea person = data.get(position);
@@ -55,8 +54,7 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
     }
 
 
-    static class ViewHolder
-    {
+    static class ViewHolder {
         TextView textView1;
         TextView textView2;
 
