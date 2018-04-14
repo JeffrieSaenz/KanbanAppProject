@@ -15,7 +15,7 @@ public class Tarea {
         this.descripcion = d;
         this.prioridad = 0;
     }
-    public Tarea(){}
+
     public String getNombre() {
         return nombre;
     }

@@ -30,9 +30,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +63,6 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
 
     private View mProgressView;
     private View mLoginFormView;
-    DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +71,7 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
         // Set up the login form.
         txtNombre = (AutoCompleteTextView) findViewById(R.id.nombreTarea);
         this.setTitle("Agregar Item");
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+
         //populateAutoComplete();
 
         txtDescripcion = (EditText) findViewById(R.id.descripionTarea);
@@ -116,15 +112,15 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
                     case R.id.btnAgregar:
                         //Se agrega la tarea al Backlog
                         //Main_Content mc = (Main_Content)b.vpa.getItem(pos);
-                        /*dv.agregarTareaBacklog(
+                        dv.agregarTareaBacklog(
                                 new Tarea(
                                         txtNombre.getText().toString(),
                                         txtDescripcion.getText().toString())
                                 , pos
-                        )
+                        );
                         Intent intento = new Intent(getApplicationContext(), Backlog.class);
-                        startActivity(intento);*/
-                        addFirebase();
+                        startActivity(intento);
+
 
                         break;
                     default:
@@ -133,15 +129,6 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
             }// fin del onclick
         });
     }// fin de OnclickDelButto
-
-    private void addFirebase(){
-        Tarea t = new Tarea(
-                txtNombre.getText().toString(),
-                txtDescripcion.getText().toString());
-        mDatabase.child("tareas").child(txtNombre.getText().toString()).setValue(t);
-        Intent intento = new Intent(getApplicationContext(), Backlog.class);
-        startActivity(intento);
-    }
 
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
