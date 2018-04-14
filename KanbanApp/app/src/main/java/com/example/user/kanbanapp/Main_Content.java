@@ -1,5 +1,6 @@
 package com.example.user.kanbanapp;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Build;
@@ -11,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -44,10 +47,9 @@ public class Main_Content extends android.support.v4.app.Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.content_main, container, false);
         itemList=new ArrayList<Tarea>();
-        adapter=new TareaAdapter(getContext(),R.layout.item, (ArrayList<Tarea>) itemList);
+        adapter=new TareaAdapter(getContext(),R.layout.item, (ArrayList<Tarea>) itemList, posicion);
         ListView lv = (ListView) view.findViewById(R.id.listView);
         lv.setAdapter(adapter);
-        // vd = DatosVentanas.getInstance();
         verificarParaInsertar();
 
 
@@ -57,10 +59,21 @@ public class Main_Content extends android.support.v4.app.Fragment {
             public void onClick(View view) {
                 Intent intento = new Intent(getContext(), IngresoItem.class);
                 //Log.i ("Mi App", String.valueOf(getId()));
-                Mensaje(String.valueOf(posicion));
+                //Mensaje(String.valueOf(posicion));
                 intento.putExtra("pos",posicion);
                 startActivity(intento);
             }
+        });
+
+        lv.setOnItemClickListener(new OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int posItem, long arg3) {
+                vd = DatosVentanas.getInstance();
+                Intent intento = new Intent(getContext(), IngresoItem.class);
+                intento.putExtra("posItem",posItem);
+                intento.putExtra("posPestana",posicion);
+                startActivity(intento);
+        }
         });
 
 
@@ -72,13 +85,13 @@ public class Main_Content extends android.support.v4.app.Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Mensaje("resume...");
+        //Mensaje("resume...");
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Mensaje("Onstart Fragment");
+        //Mensaje("Onstart Fragment");
        // (Backlog) getActivity().setTitle((Backlog) getActivity().getPageTitle(posicion));
 
         verificarParaInsertar();

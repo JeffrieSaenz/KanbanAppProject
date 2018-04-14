@@ -29,6 +29,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,10 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
 
     private View mProgressView;
     private View mLoginFormView;
+    boolean editar;
+    Integer posItem;
+    Integer posPestana;
+    private Button btnAgregar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +76,7 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
         // Set up the login form.
         txtNombre = (AutoCompleteTextView) findViewById(R.id.nombreTarea);
         this.setTitle("Agregar Item");
+        btnAgregar = (Button)findViewById(R.id.btnAgregar);
 
         //populateAutoComplete();
 
@@ -89,6 +95,8 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        verificarEditar();
+        //Mensaje(posItem+", "+posPestana);
         OnclickDelButton(R.id.btnAgregar);
     }
 
@@ -101,25 +109,29 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
             @Override
             public void onClick(View v) {
                 DatosVentanas dv = DatosVentanas.getInstance();
-                /*
-                Backlog b = Backlog.getInstance();
-                Intent callingIntent = getIntent();
-                Integer pos = callingIntent.getIntExtra("pos",0);*/
                 Intent callingIntent = getIntent();
                 Integer pos = callingIntent.getIntExtra("pos", 0);
+
                 switch (v.getId()) {
 
                     case R.id.btnAgregar:
                         //Se agrega la tarea al Backlog
                         //Main_Content mc = (Main_Content)b.vpa.getItem(pos);
-                        dv.agregarTareaBacklog(
-                                new Tarea(
-                                        txtNombre.getText().toString(),
-                                        txtDescripcion.getText().toString())
-                                , pos
-                        );
+                        if(editar == false) {
+                            dv.agregarTareaBacklog(
+                                    new Tarea(
+                                            txtNombre.getText().toString(),
+                                            txtDescripcion.getText().toString())
+                                    , pos
+                            );
+                        }else{
+                            dv.getBacklog().get(posPestana).get(posItem).setNombre(txtNombre.getText().toString());
+                            dv.getBacklog().get(posPestana).get(posItem).setDescripcion(txtDescripcion.getText().toString());
+                        }
                         Intent intento = new Intent(getApplicationContext(), Backlog.class);
                         startActivity(intento);
+
+
 
 
                         break;
@@ -382,5 +394,28 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
             showProgress(false);
         }
     }
+
+    public void verificarEditar(){
+        Intent callingIntent = getIntent();
+        posPestana = callingIntent.getIntExtra("posPestana", -1);
+        posItem = callingIntent.getIntExtra("posItem", -1);
+        DatosVentanas dv = DatosVentanas.getInstance();
+        this.editar = posPestana != -1;
+        Mensaje(posPestana+", "+posItem+", "+editar);
+
+
+        if(editar == true) {
+            txtNombre.setText(dv.getBacklog().get(posPestana).get(posItem).getNombre());
+            txtDescripcion.setText(dv.getBacklog().get(posPestana).get(posItem).getDescripcion());
+            setTitle(dv.getBacklog().get(posPestana).get(posItem).getNombre());
+            btnAgregar.setText("Actualizar Tarea");
+
+        }
+    }
+
+
+
+    public void Mensaje(String msg){
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();};
 }
 
