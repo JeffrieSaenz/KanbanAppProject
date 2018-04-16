@@ -2,6 +2,7 @@ package com.example.user.kanbanapp;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,10 +131,21 @@ public class Backlog extends AppCompatActivity {
                 addNewTab();
                 break;
 
-            case R.id.editTab:{
-                editTab();
+            case R.id.editTab:
+                if(vpa.getCount() == 0)
+                    Mensaje("Please, create a new Tab");
+                else
+                    editTab();
                 break;
-            }
+
+            case R.id.video:
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse( "https://youtu.be/CLgT_eRJbzM" ));
+                startActivity(i);
+
+                break;
+
+
             default:
                 Mensaje("No clasificado");
                 break;
@@ -263,9 +276,22 @@ public class Backlog extends AppCompatActivity {
         ViewPagerAdapter vpa_db = new ViewPagerAdapter(getSupportFragmentManager());
         DatosVentanas dv = DatosVentanas.getInstance();
         DatabaseReference mtabs = FirebaseDatabase.getInstance().getReference("tabs");
+        mtabs.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.hasChildren())
+                    findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+
                 Tab tab = dataSnapshot.getValue(Tab.class);
                 //Mensaje("TAB: " + tab.getTitle());
                 Main_Content mc  = new Main_Content();

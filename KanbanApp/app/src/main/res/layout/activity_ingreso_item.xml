@@ -38,7 +38,7 @@
                     android:id="@+id/nombreTarea"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Nombre de la actividad"
+                    android:hint="@string/taskName"
                     android:inputType="text"
                     android:maxLines="1"
                     android:singleLine="true" />
@@ -53,7 +53,7 @@
                     android:id="@+id/descripionTarea"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Descripción"
+                    android:hint="@string/taskDescription"
                     android:imeActionId="6"
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionUnspecified"

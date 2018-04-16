@@ -8,4 +8,7 @@
     <item
         android:id="@+id/editTab"
         android:title="@string/editTable" />
+    <item
+        android:id="@+id/video"
+        android:title="@string/video" />
 </menu>

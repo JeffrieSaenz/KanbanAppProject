@@ -75,7 +75,7 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
         setContentView(R.layout.activity_ingreso_item);
         // Set up the login form.
         txtNombre = (AutoCompleteTextView) findViewById(R.id.nombreTarea);
-        this.setTitle("Agregar Item");
+        //this.setTitle("Add Item");
         btnAgregar = (Button)findViewById(R.id.btnAgregar);
 
         //populateAutoComplete();
@@ -414,7 +414,7 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
         posItem = callingIntent.getIntExtra("posItem", -1);
         DatosVentanas dv = DatosVentanas.getInstance();
         this.editar = posPestana != -1;
-        Mensaje(posPestana+", "+posItem+", "+editar);
+        //Mensaje(posPestana+", "+posItem+", "+editar);
 
 
         if(editar == true) {

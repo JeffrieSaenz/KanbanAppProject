@@ -1,11 +1,14 @@
 <resources>
     <string name="app_name">KanbanApp</string>
     <string name="title_activity_main">KanbanApp</string>
-    <string name="title_activity_login">Agregar Item</string>
+    <string name="title_activity_login">Add Task</string>
     <string name="add_tab">Add new tab</string>
     <string name="add_tarea">Add new Task</string>
     <string name="cancel">Cancel</string>
     <string name="editTable">Edit Tab</string>
+    <string name="taskName">Task Name</string>
+    <string name="taskDescription">Description</string>
+    <string name="video">JF's video</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -26,5 +29,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
-    <string name="title_activity_edit">Editar Tarea</string>
+    <string name="title_activity_edit">Edit Task</string>
 </resources>
