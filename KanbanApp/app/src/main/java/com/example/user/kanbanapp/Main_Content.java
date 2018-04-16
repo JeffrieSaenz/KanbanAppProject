@@ -31,9 +31,24 @@ public class Main_Content extends android.support.v4.app.Fragment {
 
     Integer posicion;
 
-    private ArrayList<Tarea> backlog = new ArrayList<>();
+    private ArrayList<Tarea> tareas = new ArrayList<>();
+
 
     public Main_Content() {
+
+    }
+
+    public ArrayList<Tarea> getTareas() {
+        return tareas;
+    }
+
+    public void setTareas(ArrayList<Tarea> tareas) {
+        if(tareas == null)
+            this.tareas = new ArrayList<Tarea>();
+        else {
+            this.tareas = tareas;
+            //verificarParaInsertar();
+        }
     }
 
     public void setPosicion(Integer posicion) {
@@ -95,14 +110,15 @@ public class Main_Content extends android.support.v4.app.Fragment {
        // (Backlog) getActivity().setTitle((Backlog) getActivity().getPageTitle(posicion));
 
         verificarParaInsertar();
+
         //Backlog b = (Backlog) getActivity();
         //getActivity().setTitle(b.vpa.getPageTitle(b.viewPager.getCurrentItem()));
     }
 
-    private void verificarParaInsertar() {
+    public void verificarParaInsertar() {
         vd = DatosVentanas.getInstance();
         itemList.clear();
-        ArrayList<Tarea> at = vd.getBacklog().get(posicion);
+        ArrayList<Tarea> at = tareas;
         for(int i = 0; i< at.size(); i++){
             if(!at.isEmpty())
                 itemList.add(at.get(i));

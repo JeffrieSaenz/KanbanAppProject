@@ -1,4 +1,6 @@
 package com.example.user.kanbanapp;
+import java.lang.Exception;
+import java.util.EmptyStackException;
 
 /**
  * Created by User on 10/04/2018.
@@ -16,11 +18,16 @@ public class Tarea {
         this.prioridad = 0;
     }
 
+    public Tarea() {
+    }
+
     public String getNombre() {
         return nombre;
     }
 
     public void setNombre(String nombre) {
+
+
         this.nombre = nombre;
     }
 

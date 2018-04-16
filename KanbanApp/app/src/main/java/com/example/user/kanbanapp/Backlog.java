@@ -2,6 +2,7 @@ package com.example.user.kanbanapp;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
@@ -13,6 +14,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +39,9 @@ public class Backlog extends AppCompatActivity {
 
     public ViewPagerAdapter vpa;
     public ViewPager viewPager;
+    public FbConnection conn;
+    private ArrayList<Tab> tbs = new ArrayList<>();
+    private ViewPagerAdapter vpa_aux;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,36 +56,17 @@ public class Backlog extends AppCompatActivity {
         //viewPager = new ViewPager(this);
 
         //mViewPager.setAdapter(mSectionsPagerAdapter);
-        // addFIni();
-        verificar();
+        //addFIni();
         viewPager.setAdapter(vpa);
-        Mensaje("Regrese");
+        //verificar();
+        findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+        readTabs();
 
-        this.setTitle(vpa.getPageTitle(viewPager.getCurrentItem()));
-        //verificarParaInsertar();
-        /*
-        itemList=new ArrayList<Tarea>();
-        adapter=new TareaAdapter(this,R.layout.item, (ArrayList<Tarea>) itemList);
+        //Mensaje("Regrese");
 
-        ListView lv = (ListView) findViewById(R.id.listView);
-        lv.setAdapter(adapter);
+        //this.setTitle(vpa.getPageTitle(viewPager.getCurrentItem()));
 
 
-
-        verificarParaInsertar();
-
-    */
-
-/*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intento = new Intent(getApplicationContext(), IngresoItem.class);
-                //intento.putExtra("pos",viewPager.getCurrentItem());
-                startActivity(intento);
-            }
-        });*/
     viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -88,6 +81,7 @@ public class Backlog extends AppCompatActivity {
         public void onPageScrollStateChanged(int state) {
 
         }
+
     });
 
     }
@@ -95,11 +89,9 @@ public class Backlog extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        updateTabs();
 
-        //Mensaje("Pase por OnStart");
     }
-
-    ;
 
     @Override
     protected void onRestart() {
@@ -109,25 +101,11 @@ public class Backlog extends AppCompatActivity {
         //Mensaje("Pase por onRestart");
     }
 
-    ;
-
     @Override
     protected void onResume() {
         super.onResume();
         //Mensaje("Pase por onResume");
     }
-
-    ;
-
-
-    /*
-    private void verificarParaInsertar() {
-        vd = DatosVentanas.getInstance();
-        for(int i = 0; i<vd.getBacklog().size(); i++){
-            itemList.add(vd.getBacklog().get(i));
-        }
-    }
-*/
 
     public void Mensaje(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
@@ -150,6 +128,11 @@ public class Backlog extends AppCompatActivity {
                 Mensaje("Primero");
                 addNewTab();
                 break;
+
+            case R.id.editTab:{
+                editTab();
+                break;
+            }
             default:
                 Mensaje("No clasificado");
                 break;
@@ -168,23 +151,78 @@ public class Backlog extends AppCompatActivity {
     }
 
     public void addFIni() {
-        vd = DatosVentanas.getInstance();
-        vd.agregaInicial();
-        vpa.addFragments(new Main_Content(), "New one");
+        conn = FbConnection.getInstance();
+        //vd = DatosVentanas.getInstance();
+        //vd.agregaInicial();
+
+        //vpa.addFragments(new Main_Content(), "New one");
+        Main_Content mc  = new Main_Content();
+        mc.setPosicion(0);
+        vpa.addFragments(mc, "New Tab");
+        ArrayList<Tarea> a = new ArrayList<Tarea>();
+        a.add(new Tarea("MAMA","aaa"));
+        Tab t = new Tab("New Tab",0,a);
+        conn.addTabs(t);
         vpa.notifyDataSetChanged();
         //viewPager.setAdapter(vpa);
     }
 
     public void verificar() {
-        vd = DatosVentanas.getInstance();
-        if (vd.getBacklog().isEmpty())
+        conn = FbConnection.getInstance();
+        //conn.readTabs();
+
+        ArrayList<Tab> tbs = conn.getTabs();
+        Mensaje("TABS:" + tbs.size());
+
+        if(tbs.isEmpty())
             addFIni();
-        else {
-            for (ArrayList<Tarea> e : vd.getBacklog()) {
-                addFragment();
+        else{
+            for (Tab t: tbs){
+                //addFragment();
+                Main_Content mc  = new Main_Content();
+                mc.setPosicion(t.getPos());
+                mc.setTareas(t.getTareas());
+                vpa.addFragments(mc,t.getTitle());
             }
         }
+        vpa.notifyDataSetChanged();
     }
+
+    public void editTab() {
+        final EditText txtUrl = new EditText(this);
+
+        // Set the default text to a link of the Queen
+        //txtUrl.setHint("http://www.librarising.com/astrology/celebs/images2/QR/queenelizabethii.jpg");
+
+        new AlertDialog.Builder(this)
+                .setTitle("Edit tab")
+                .setMessage(" Name ")
+                .setView(txtUrl)
+                .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String url = txtUrl.getText().toString();
+                        //vd.agregaInicial();
+                        DatosVentanas vd = DatosVentanas.getInstance();
+
+                        Tab t = new Tab(url,viewPager.getCurrentItem(), vd.getTab(viewPager.getCurrentItem()).getTareas());
+                        conn.addTabs(t);
+                        setTitle(t.getTitle());
+
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                })
+                .show();
+        //vd.agregaInicial();
+        //vpa.addFragments(new Main_Content(), "New one");
+        //vpa.notifyDataSetChanged();
+        //viewPager.setAdapter(vpa);
+    }
+
+
 
     public void addNewTab() {
         final EditText txtUrl = new EditText(this);
@@ -199,10 +237,14 @@ public class Backlog extends AppCompatActivity {
                 .setPositiveButton("Crear", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         String url = txtUrl.getText().toString();
-                        vd.agregaInicial();
-                        vpa.addFragments(new Main_Content(), url);
-                        vpa.notifyDataSetChanged();
-                        viewPager.setCurrentItem(vpa.getCount());
+                        //vd.agregaInicial();
+                        Main_Content mc  = new Main_Content();
+                        vpa = (ViewPagerAdapter) viewPager.getAdapter();
+                        mc.setPosicion(vpa.getCount());
+                        Tab t = new Tab(url,vpa.getCount(),new ArrayList<Tarea>());
+                        conn.addTabs(t);
+                        viewPager.setCurrentItem(vpa.getCount()+1);
+                        setTitle(t.getTitle());
                     }
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -214,5 +256,70 @@ public class Backlog extends AppCompatActivity {
         //vpa.addFragments(new Main_Content(), "New one");
         //vpa.notifyDataSetChanged();
         //viewPager.setAdapter(vpa);
+    }
+
+    public void readTabs(){
+        tbs = new ArrayList<>();
+        ViewPagerAdapter vpa_db = new ViewPagerAdapter(getSupportFragmentManager());
+        DatosVentanas dv = DatosVentanas.getInstance();
+        DatabaseReference mtabs = FirebaseDatabase.getInstance().getReference("tabs");
+        ChildEventListener childEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+                Tab tab = dataSnapshot.getValue(Tab.class);
+                //Mensaje("TAB: " + tab.getTitle());
+                Main_Content mc  = new Main_Content();
+                mc.setPosicion(tab.getPos());
+                mc.setTareas(tab.getTareas());
+                vpa.addFragments(mc,tab.getTitle());
+                dv.getBacklog().add(tab);
+                vpa.notifyDataSetChanged();
+                if(tab.getPos() == 0)
+                    setTitle(tab.getTitle());
+                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+                //Mensaje("Change");
+                DatosVentanas dv = DatosVentanas.getInstance();
+                ArrayList<Tab> tbs = dv.getBacklog();
+                vpa.getItem(viewPager.getCurrentItem());
+                vpa.notifyDataSetChanged();
+                Tab t= dataSnapshot.getValue(Tab.class);
+                vpa.setItem(t);
+                vpa.notifyDataSetChanged();
+                ((Main_Content)vpa.getItem(t.getPos())).verificarParaInsertar();
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                //Mensaje("Remove");
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+                //Mensaje("Moved");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //Mensaje("Cancelled");
+            }
+        };
+        mtabs.addChildEventListener(childEventListener);
+
+    }
+
+    public void updateTabs(){
+        DatosVentanas dv = DatosVentanas.getInstance();
+        ArrayList<Tab> tbs = dv.getBacklog();
+        conn = FbConnection.getInstance();
+        if(tbs.size() > 0)
+            for(Tab t : tbs) {
+                conn.addTabs(t);
+                vpa.notifyDataSetChanged();
+            }
     }
 }

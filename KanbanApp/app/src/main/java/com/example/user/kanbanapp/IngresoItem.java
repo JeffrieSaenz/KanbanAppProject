@@ -98,6 +98,8 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
         verificarEditar();
         //Mensaje(posItem+", "+posPestana);
         OnclickDelButton(R.id.btnAgregar);
+        OnclickDelButton(R.id.btnCancelar);
+
     }
 
 
@@ -111,30 +113,41 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
                 DatosVentanas dv = DatosVentanas.getInstance();
                 Intent callingIntent = getIntent();
                 Integer pos = callingIntent.getIntExtra("pos", 0);
+                Intent intento = new Intent(getApplicationContext(), Backlog.class);
 
                 switch (v.getId()) {
 
                     case R.id.btnAgregar:
                         //Se agrega la tarea al Backlog
                         //Main_Content mc = (Main_Content)b.vpa.getItem(pos);
-                        if(editar == false) {
-                            dv.agregarTareaBacklog(
-                                    new Tarea(
-                                            txtNombre.getText().toString(),
-                                            txtDescripcion.getText().toString())
-                                    , pos
-                            );
+                        if(txtNombre.getText().toString().length() > 0) {
+                            if (editar == false) {
+                                dv.agregarTareaBacklog(
+                                        new Tarea(
+                                                txtNombre.getText().toString(),
+                                                txtDescripcion.getText().toString())
+                                        , pos
+
+                                );
+                            } else {
+                                if (dv.getTab(posPestana) != null) {
+
+                                        dv.getTab(posPestana).getTareas().get(posItem).setNombre(txtNombre.getText().toString());
+                                        dv.getTab(posPestana).getTareas().get(posItem).setDescripcion(txtDescripcion.getText().toString());
+                                }
+                            }
+                            startActivity(intento);
                         }else{
-                            dv.getBacklog().get(posPestana).get(posItem).setNombre(txtNombre.getText().toString());
-                            dv.getBacklog().get(posPestana).get(posItem).setDescripcion(txtDescripcion.getText().toString());
+                            txtNombre.setError(getString(R.string.error_field_required));
                         }
-                        Intent intento = new Intent(getApplicationContext(), Backlog.class);
-                        startActivity(intento);
-
-
 
 
                         break;
+
+                    case R.id.btnCancelar:
+                        startActivity(intento);
+                        break;
+
                     default:
                         break;
                 }// fin de casos
@@ -405,10 +418,12 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
 
 
         if(editar == true) {
-            txtNombre.setText(dv.getBacklog().get(posPestana).get(posItem).getNombre());
-            txtDescripcion.setText(dv.getBacklog().get(posPestana).get(posItem).getDescripcion());
-            setTitle(dv.getBacklog().get(posPestana).get(posItem).getNombre());
-            btnAgregar.setText("Actualizar Tarea");
+            if(dv.getTab(posPestana).getTareas() != null) {
+                txtNombre.setText(dv.getTab(posPestana).getTareas().get(posItem).getNombre());
+                txtDescripcion.setText(dv.getTab(posPestana).getTareas().get(posItem).getDescripcion());
+                setTitle(dv.getTab(posPestana).getTareas().get(posItem).getNombre());
+                btnAgregar.setText(R.string.btnActualizar);
+            }
 
         }
     }

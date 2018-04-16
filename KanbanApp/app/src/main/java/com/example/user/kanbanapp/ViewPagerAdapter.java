@@ -9,11 +9,13 @@ import java.util.List;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
-    private List<Fragment> fragments = new ArrayList<>();
+    private List<Main_Content> fragments = new ArrayList<>();
     private List<String> titles = new ArrayList<>();
 
     public ViewPagerAdapter(FragmentManager fm) {
         super(fm);
+        titles = new ArrayList<>();
+        fragments = new ArrayList<>();
     }
 
     @Override
@@ -39,5 +41,9 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         titles.add(t);
         Integer pos = fragments.size() - 1;
         f.setPosicion(pos);
+    }
+
+    public void setItem(Tab t){
+        fragments.get(t.getPos()).setTareas(t.getTareas());
     }
 }

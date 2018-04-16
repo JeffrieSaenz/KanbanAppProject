@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "103734599635",
+    "firebase_url": "https://kanbanapp-fc9da.firebaseio.com",
+    "project_id": "kanbanapp-fc9da",
+    "storage_bucket": "kanbanapp-fc9da.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:103734599635:android:655f27e07b6c1a8d",
+        "android_client_info": {
+          "package_name": "com.example.user.kanbanapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "103734599635-41fnjcnhvpp1dua4mcripbf7j7kr662q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYPNHn_sCTXvnKlQH2NqAaToHYaVDcnwI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

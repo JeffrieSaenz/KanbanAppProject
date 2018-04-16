@@ -69,8 +69,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Agregar Tarea"
+                android:text="@string/add_tarea"
                 android:textStyle="bold" />
+            <Button
+                android:id="@+id/btnCancelar"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/cancel"
+                android:textStyle="bold" />
+
 
         </LinearLayout>
     </ScrollView>

@@ -49,9 +49,16 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
                 @Override
                 public void onClick(View v) {
                     System.out.println("pos en listView: "+position+", posicion en pestanas: "+posPestana);
-                    System.out.println("adap: "+data.size()+", global: "+ dv.getBacklog().get(posPestana).size());
+                    //System.out.println("adap: "+data.size()+", global: "+ dv.getBacklog().get(posPestana).size());
                     data.remove(position);
-                    dv.getBacklog().get(posPestana).remove(position);
+                    dv.getTab(posPestana).getTareas().remove(position);
+                    DatosVentanas dv = DatosVentanas.getInstance();
+                    ArrayList<Tab> tbs = dv.getBacklog();
+                    FbConnection conn = FbConnection.getInstance();
+                    if(tbs.size() > 0)
+                        for(Tab t : tbs)
+                            conn.addTabs(t);
+                    //dv.getBacklog().get(posPestana).remove(position);
                     notifyDataSetChanged();
                 }
             });
