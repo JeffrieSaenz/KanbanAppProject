@@ -52,5 +52,8 @@ public class FbConnection {
         mDatabase.child("tabs").child(String.valueOf(tab.getPos())).setValue(tab);
     }
 
+    public void addImageURL(String a1,String a2,String a3,String a4){
+        mDatabase.child("url").child(a1).child(a2).child(a3).setValue(a4);
+    }
 
 }

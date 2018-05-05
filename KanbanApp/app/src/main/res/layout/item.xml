@@ -88,6 +88,22 @@
             tools:layout_editor_absoluteX="0dp">
 
         </android.support.constraint.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/btnRecord"
+            android:layout_width="48dp"
+            android:layout_height="31dp"
+            app:layout_constraintStart_toEndOf="@+id/eliminarTarea"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/camera" />
+
+        <ImageView
+            android:id="@+id/tareaInfo"
+            android:layout_width="48dp"
+            android:layout_height="36dp"
+            app:layout_constraintStart_toEndOf="@+id/btnRecord"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/common_full_open_on_phone" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>
