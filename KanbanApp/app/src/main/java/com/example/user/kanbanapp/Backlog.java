@@ -106,6 +106,8 @@ public class Backlog extends AppCompatActivity {
         super.onStart();
         updateTabs();
 
+        Intent intent = new Intent(this, HelloIntentService.class);
+        startService(intent);
     }
 
     @Override
