@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -142,14 +143,14 @@ public class TareaInfo extends AppCompatActivity {
 
         protected Bitmap doInBackground(String... urls) {
             String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
+            Bitmap bitmap = null;
             try {
                 URL url = new URL(urls[0]);
-                mIcon11 = BitmapFactory.decodeStream((InputStream)url.getContent());
+                bitmap = BitmapFactory.decodeStream((InputStream)url.getContent());
             } catch (IOException e) {
                 //Log.e(TAG, e.getMessage());
             }
-            return mIcon11;
+            return bitmap;
         }
 
         protected void onPostExecute(Bitmap result) {
@@ -170,8 +171,26 @@ public class TareaInfo extends AppCompatActivity {
             }
             Image ObjetoActual = images.get(position);
             // Fill the view
-            ImageView im = (ImageView) findViewById(R.id.imageViewI);
-            //loadImageFromURL(ObjetoActual.getAtributo02(),im);
+            ImageView im = (ImageView)itemView.findViewById(R.id.imageViewI);
+
+            URL imageUrl = null;
+            HttpURLConnection conn = null;
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+
+                imageUrl = new URL(ObjetoActual.getAtributo02());
+                conn = (HttpURLConnection) imageUrl.openConnection();
+                conn.connect();
+                Bitmap imagen = BitmapFactory.decodeStream(conn.getInputStream());
+
+                im.setImageBitmap(imagen);
+
+            } catch (IOException e) {
+
+                e.printStackTrace();
+
+            }
             TextView elatributo01 = (TextView) itemView.findViewById(R.id.paraelatributo01);
             elatributo01.setText(ObjetoActual.getAtributo01());
             return itemView;
