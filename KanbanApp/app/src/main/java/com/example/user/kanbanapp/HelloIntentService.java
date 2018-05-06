@@ -1,8 +1,16 @@
 package com.example.user.kanbanapp;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.icu.text.SimpleDateFormat;
+import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -20,10 +28,11 @@ import java.util.TimerTask;
 
 public class HelloIntentService extends IntentService {
 
-    ArrayList<Date> fechas;
+    ArrayList<Tarea> tareas;
     Timer timer = new Timer();
     Tab tab;
     Date fechaHoy;
+    int cont = 0;
     /**
      * A constructor is required, and must call the super IntentService(String)
      * constructor with a name for the worker thread.
@@ -35,7 +44,7 @@ public class HelloIntentService extends IntentService {
     public HelloIntentService() {
 
         super("HelloIntentService");
-    fechas = new ArrayList<>();
+    tareas = new ArrayList<>();
         readTabs();
     }
 
@@ -58,6 +67,7 @@ public class HelloIntentService extends IntentService {
         // Normally we would do some work here, like download a file.
         // For our sample, we just sleep for 5 seconds.
         try {
+            //validarFechas();
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
@@ -87,9 +97,11 @@ public class HelloIntentService extends IntentService {
                 //Main_Content mc = new Main_Content();
                 //mc.setPosicion(tab.getPos());
                 //mc.setTareas(tab.getTareas());
-                for( Tarea t: tab.getTareas()){
-                    if(!fechas.contains(t.getFecha())) {
-                        fechas.add(t.getFecha());
+                if(tab.getTareas() != null) {
+                    for (Tarea t : tab.getTareas()) {
+                        if (!tareas.contains(t)) {
+                            tareas.add(t);
+                        }
                     }
                 }
                 //vpa.addFragments(mc, tab.getTitle());
@@ -108,9 +120,11 @@ public class HelloIntentService extends IntentService {
                 //vpa.getItem(viewPager.getCurrentItem());
                 //vpa.notifyDataSetChanged();
                 tab = dataSnapshot.getValue(Tab.class);
-                for( Tarea t: tab.getTareas()){
-                    if(!fechas.contains(t.getFecha())) {
-                        fechas.add(t.getFecha());
+                if(tab.getTareas() != null) {
+                    for (Tarea t : tab.getTareas()) {
+                        if (!tareas.contains(t)) {
+                            tareas.add(t);
+                        }
                     }
                 }
                 //vpa.setItem(t);
@@ -140,11 +154,17 @@ public class HelloIntentService extends IntentService {
 
     public void validarFechas(){
         fechaHoy = new Date();
-        for (Date t : fechas){
-            if(fechaHoy.after(t)){
+        for (Tarea t : tareas){
+            if(fechaHoy.after(t.getFecha())){
                 System.out.println("La fecha "+ t +" está vencida");
+                Notificacion.creaNotificacion(cont++,"ALERTA: Tarea vencida!",
+                        t.getNombre()+"",
+                        "http://es.stackoverflow.com", getApplicationContext());
+
             }
         }
 
     }
+
+
 }
