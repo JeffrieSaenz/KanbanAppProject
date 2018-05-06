@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -125,7 +126,7 @@ public class IngresoItem extends AppCompatActivity implements LoaderCallbacks<Cu
                                 dv.agregarTareaBacklog(
                                         new Tarea(
                                                 txtNombre.getText().toString(),
-                                                txtDescripcion.getText().toString())
+                                                txtDescripcion.getText().toString(),new ArrayList<>(), new Date())
                                         , pos
 
                                 );

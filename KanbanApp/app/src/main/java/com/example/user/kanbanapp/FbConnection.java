@@ -9,6 +9,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class FbConnection {
     private DatabaseReference mDatabase;
@@ -44,7 +45,7 @@ public class FbConnection {
     }
 
     public void addFirebase(String a1, String a2) {
-        Tarea t = new Tarea(a1, a2);
+        Tarea t = new Tarea(a1, a2,new ArrayList<>(),new Date());
         mDatabase.child("tareas").child(a1).setValue(t);
     }
 

@@ -177,7 +177,7 @@ public class Backlog extends AppCompatActivity {
     }
 
     public void addFIni() {
-        conn = FbConnection.getInstance();
+       /* conn = FbConnection.getInstance();
         //vd = DatosVentanas.getInstance();
         //vd.agregaInicial();
 
@@ -190,7 +190,7 @@ public class Backlog extends AppCompatActivity {
         Tab t = new Tab("New Tab", 0, a);
         conn.addTabs(t);
         vpa.notifyDataSetChanged();
-        //viewPager.setAdapter(vpa);
+        //viewPager.setAdapter(vpa);*/
     }
 
     public void verificar() {
@@ -423,8 +423,10 @@ public class Backlog extends AppCompatActivity {
                                         // Get a URL to the uploaded content
                                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
                                         int x = viewPager.getCurrentItem();
-                                        conn.addImageURL(tbs.get(x).getTitle(),String.valueOf(p),
-                                                nombreImagen.getText().toString(),downloadUrl.toString());
+                                        tbs.get(x).getTareas().get(p).getImagenes().add(new Image(nombreImagen.getText().toString(),downloadUrl.toString()));
+                                        updateTabs();
+                                        //conn.addImageURL(tbs.get(x).getTitle(),String.valueOf(p),
+                                        //        nombreImagen.getText().toString(),downloadUrl.toString());
                                         MensajeOK("Saved");
                                     }
                                 })

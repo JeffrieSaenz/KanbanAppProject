@@ -3,11 +3,20 @@ package com.example.user.kanbanapp;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -23,6 +32,10 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +44,7 @@ public class TareaInfo extends AppCompatActivity {
     public ViewPagerAdapter vpa;
     public ViewPager viewPager;
     private ArrayList<Tab> tbs = new ArrayList<>();
+    ArrayList<Image> images = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +53,9 @@ public class TareaInfo extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.cont);
         initPagerAdapter();
         viewPager.setAdapter(vpa);
-        //readTabs();
-        readImages();
+        readTabs();
+        addImages();
+        //readImages();
     }
 
     public void initPagerAdapter() {
@@ -67,30 +82,17 @@ public class TareaInfo extends AppCompatActivity {
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-
-                Tab tab = dataSnapshot.getValue(Tab.class);
-                //Mensaje("TAB: " + tab.getTitle());
-                Main_Content mc = new Main_Content();
-                mc.setPosicion(tab.getPos());
-                mc.setTareas(tab.getTareas());
-                vpa.addFragments(mc, tab.getTitle());
-                dv.getBacklog().add(tab);
-                vpa.notifyDataSetChanged();
-                if (tab.getPos() == 0)
-                    setTitle(tab.getTitle());
+                Tab t = dataSnapshot.getValue(Tab.class);
+                Intent callingIntent = getIntent();
+                int posTarea = callingIntent.getIntExtra("pos", 1);
+                int posTab = callingIntent.getIntExtra("tab", 1);
+                Image name = t.getTareas().get(posTarea).getImagenes().get(0);
+                images.add(name);
+                //addImages();
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-                //Mensaje("Change");
-                DatosVentanas dv = DatosVentanas.getInstance();
-                ArrayList<Tab> tbs = dv.getBacklog();
-                vpa.getItem(viewPager.getCurrentItem());
-                vpa.notifyDataSetChanged();
-                Tab t = dataSnapshot.getValue(Tab.class);
-                vpa.setItem(t);
-                vpa.notifyDataSetChanged();
-                ((Main_Content) vpa.getItem(t.getPos())).verificarParaInsertar();
 
             }
 
@@ -113,13 +115,10 @@ public class TareaInfo extends AppCompatActivity {
 
     }
 
-    public void readImages() {
-        Intent callingIntent = getIntent();
-        Integer pos = callingIntent.getIntExtra("pos", 0);
-        String name = callingIntent.getStringExtra("name");
-
-
-
+    public void addImages() {
+        ArrayAdapter<Image> adapter = new MyListAdapter();
+        ListView list = (ListView) findViewById(R.id.listViewImage);
+        list.setAdapter(adapter);
     }
 
     public void MensajeOK(String msg){
@@ -134,5 +133,49 @@ public class TareaInfo extends AppCompatActivity {
         alert11.show();
         ;};
 
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                URL url = new URL(urls[0]);
+                mIcon11 = BitmapFactory.decodeStream((InputStream)url.getContent());
+            } catch (IOException e) {
+                //Log.e(TAG, e.getMessage());
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
+
+    private class MyListAdapter extends ArrayAdapter<Image> {
+        public MyListAdapter() {
+            super(TareaInfo.this, R.layout.image, images);
+        }
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // Make sure we have a view to work with (may have been given null)
+            View itemView = convertView;
+            if (itemView == null) {
+                itemView = getLayoutInflater().inflate(R.layout.image, parent, false);
+            }
+            Image ObjetoActual = images.get(position);
+            // Fill the view
+            ImageView im = (ImageView) findViewById(R.id.imageViewI);
+            //loadImageFromURL(ObjetoActual.getAtributo02(),im);
+            TextView elatributo01 = (TextView) itemView.findViewById(R.id.paraelatributo01);
+            elatributo01.setText(ObjetoActual.getAtributo01());
+            return itemView;
+        }
+    }
 
 }
