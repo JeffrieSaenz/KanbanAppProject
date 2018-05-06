@@ -405,7 +405,7 @@ public class Backlog extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         String path = Environment.getExternalStorageDirectory() + File.separator + "fotos" +
-                                File.separator + "pic.jpg";
+                                File.separator + nombreImagen.getText().toString()+".jpg";
 
                         MediaScannerConnection.scanFile(getBaseContext(), new String[]{path}, null,
                                 new MediaScannerConnection.OnScanCompletedListener() {

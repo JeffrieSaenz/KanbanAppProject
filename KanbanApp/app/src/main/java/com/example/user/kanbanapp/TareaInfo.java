@@ -87,8 +87,11 @@ public class TareaInfo extends AppCompatActivity {
                 Intent callingIntent = getIntent();
                 int posTarea = callingIntent.getIntExtra("pos", 1);
                 int posTab = callingIntent.getIntExtra("tab", 1);
-                Image name = t.getTareas().get(posTarea).getImagenes().get(0);
-                images.add(name);
+                ArrayList<Image> imgs = t.getTareas().get(posTarea).getImagenes();
+                for(int i = 0 ; i < imgs.size(); i++) {
+                    Image name = t.getTareas().get(posTarea).getImagenes().get(i);
+                    images.add(name);
+                }
                 //addImages();
             }
 
