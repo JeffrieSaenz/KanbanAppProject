@@ -21,15 +21,16 @@
         <TextView
             android:id="@+id/nombre"
             android:layout_width="match_parent"
-            android:layout_height="49dp"
+            android:layout_height="42dp"
 
             android:layout_marginEnd="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="28dp"
             android:text="Item1"
             android:textAlignment="textEnd"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="MissingConstraints"></TextView>
@@ -44,6 +45,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <RelativeLayout
+            android:id="@+id/relativeLayout"
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:layout_marginStart="4dp"
@@ -90,20 +92,16 @@
         </android.support.constraint.ConstraintLayout>
 
         <ImageView
-            android:id="@+id/btnRecord"
-            android:layout_width="48dp"
-            android:layout_height="31dp"
+            android:id="@+id/me"
+            android:layout_width="47dp"
+            android:layout_height="27dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/nombre"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/eliminarTarea"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/camera" />
-
-        <ImageView
-            android:id="@+id/tareaInfo"
-            android:layout_width="48dp"
-            android:layout_height="36dp"
-            app:layout_constraintStart_toEndOf="@+id/btnRecord"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/common_full_open_on_phone" />
+            app:srcCompat="@drawable/menuicon" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

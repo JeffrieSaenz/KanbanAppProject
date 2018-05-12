@@ -15,11 +15,13 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,8 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
     private Integer posPestana;
     private DatosVentanas dv;
     private int rec = 0;
+    private static final int READ_REQUEST_CODE = 42;
+    Context mContext;
 
 
     public TareaAdapter(Context context, int layoutResourceId, ArrayList<Tarea> data, Integer pos) {
@@ -46,6 +50,7 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
+        mContext = parent.getContext();
         ViewHolder holder = null;
         dv = DatosVentanas.getInstance();
         if (row == null) {
@@ -72,37 +77,6 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
                     notifyDataSetChanged();
                 }
             });
-            holder.record = (ImageView) row.findViewById(R.id.btnRecord);
-            holder.record.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    checkPermission();
-                    String path = Environment.getExternalStorageDirectory() + File.separator + "fotos" +
-                            File.separator + "pic.jpg";
-                    File imagesFolder = new File(
-                            Environment.getExternalStorageDirectory(), "fotos");
-                    imagesFolder.mkdirs();
-                    File fileImage = new File(path);
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    //intent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(fileImage));
-                    intent.putExtra("pos",position);
-                    ((Activity) context).startActivityForResult(intent,3434);
-
-                }
-            });
-
-            holder.tareaInfo = (ImageView) row.findViewById(R.id.tareaInfo);
-            holder.tareaInfo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intento = new Intent(((Activity) context).getApplicationContext(), TareaInfo.class);
-                    intento.putExtra("pos", position);
-                    intento.putExtra("name", dv.getTab(posPestana).getTareas().get(position).getNombre());
-                    intento.putExtra("tab", posPestana);
-
-                    ((Activity) context).startActivity(intento);
-                }
-            });
 
             row.setTag(holder);
         } else {
@@ -113,8 +87,81 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
 
         holder.textView1.setText(person.getNombre());
         holder.textView2.setText(person.getDescripcion());
+
+        //holder.mimageview = (ImageView) row.findViewById(R.id.mimageView);
+        holder.mimageview = (ImageView) row.findViewById(R.id.me);
+        try {
+            holder.mimageview.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+
+
+                    switch (v.getId()) {
+                        case R.id.me:
+
+                            PopupMenu popup = new PopupMenu(getContext().getApplicationContext(), v);
+                            popup.getMenuInflater().inflate(R.menu.itemenu,
+                                    popup.getMenu());
+                            popup.show();
+                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item) {
+
+                                    switch (item.getItemId()) {
+                                        case R.id.cam:
+                                            /* AQUI ES DONDE HAY QUE PASARLO */
+                                            checkPermission();
+
+                                            String path = Environment.getExternalStorageDirectory() + File.separator + "fotos" +
+                                                File.separator + "pic.jpg";
+                                            File imagesFolder = new File(
+                                                    Environment.getExternalStorageDirectory(), "fotos");
+                                            imagesFolder.mkdirs();
+                                            File fileImage = new File(path);
+                                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                            //intent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(fileImage));
+                                            intent.putExtra("pos",position);
+                                            ((Activity) context).startActivityForResult(intent,3434);
+                                            break;
+                                        case R.id.viewTarea:
+
+                                            Intent intento = new Intent(((Activity) context).getApplicationContext(), TareaInfo.class);
+                                            intento.putExtra("pos", position);
+                                            intento.putExtra("name", dv.getTab(posPestana).getTareas().get(position).getNombre());
+                                            intento.putExtra("tab", posPestana);
+                                            ((Activity) context).startActivity(intento);
+
+                                            break;
+                                        case R.id.filechooser:
+                                            filechooserEvent(position);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+
+                                    return true;
+                                }
+                            });
+
+                            break;
+
+                        default:
+                            break;
+                    }
+
+
+                }
+            });
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
         return row;
     }
+
 
     @TargetApi(Build.VERSION_CODES.M)
     private void checkPermission() {
@@ -128,13 +175,24 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
 
     }
 
+
+
     static class ViewHolder {
         TextView textView1;
         TextView textView2;
         ImageButton borrar;
         ImageView record;
         ImageView tareaInfo;
+        ImageView mimageview;
 
+    }
+
+    public void filechooserEvent(int position){
+        Intent intent = new Intent()
+                .setType("*/*")
+                .setAction(Intent.ACTION_GET_CONTENT);
+        intent.putExtra("pos",position);
+        ((Activity) context).startActivityForResult(Intent.createChooser(intent, "Buscar un archivo"), 123);
 
     }
 }
