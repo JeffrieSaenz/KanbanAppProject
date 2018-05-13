@@ -10,6 +10,9 @@
     <string name="taskName">Task Name</string>
     <string name="taskDescription">Description</string>
     <string name="video">JF's video</string>
+    <string name="camera"> Take a picture </string>
+    <string name="viewTarea"> View </string>
+    <string name="filechooser"> Attach file </string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
