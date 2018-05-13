@@ -41,6 +41,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import junit.framework.Test;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
@@ -158,10 +160,14 @@ public class Backlog extends AppCompatActivity {
                     editTab();
                 break;
 
+
             case R.id.video:
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse("https://youtu.be/CLgT_eRJbzM"));
-                startActivity(i);
+                //Intent i = new Intent(Intent.ACTION_VIEW);
+                //i.setData(Uri.parse("https://youtu.be/CLgT_eRJbzM"));
+                //startActivity(i);
+                Intent intento = new Intent(getApplicationContext(), IngresoNuevaTarea.class);
+                startActivity(intento);
+
 
                 break;
 

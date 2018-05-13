@@ -1,6 +1,7 @@
 package com.example.user.kanbanapp;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by User on 10/04/2018.
@@ -9,8 +10,10 @@ import java.util.ArrayList;
 public class DatosVentanas {
 
     private ArrayList<Tab> tabs = new ArrayList<>();
+    Date reminder;
 
     private static DatosVentanas instance = null;
+
 
     protected DatosVentanas() {
         // agregaInicial();
@@ -48,5 +51,10 @@ public class DatosVentanas {
                     t.setTareas(new ArrayList<Tarea>());
                 t.getTareas().add(a);
             }
+    }
+
+    public void setDate(Date d)
+    {
+        this.reminder = d;
     }
 }// fin de la clase de variables globales

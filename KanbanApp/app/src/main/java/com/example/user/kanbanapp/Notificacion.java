@@ -17,7 +17,7 @@ public class Notificacion {
 
     public Notificacion(String t, String m){
         titulo = t;
-        mensaje = m ;
+        mensaje = m;
     }
 
     public static void creaNotificacion(long when, String notificationTitle,

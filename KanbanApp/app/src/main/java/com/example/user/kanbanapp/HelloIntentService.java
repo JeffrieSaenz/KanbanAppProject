@@ -81,22 +81,15 @@ public class HelloIntentService extends IntentService {
     }
 
     public void readTabs() {
-        //tbs = new ArrayList<>();
-        //ViewPagerAdapter vpa_db = new ViewPagerAdapter(getSupportFragmentManager());
-        //DatosVentanas dv = DatosVentanas.getInstance();
+
         DatabaseReference mtabs = FirebaseDatabase.getInstance().getReference("tabs");
 
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
 
-               tab = dataSnapshot.getValue(Tab.class);
+               tab = dataSnapshot.getValue(Tab.class);//Detecta la tabla en que hice el cambio
 
-                //Mensaje("TAB: " + tab.getTitle());
-                //tbs.add(tab);
-                //Main_Content mc = new Main_Content();
-                //mc.setPosicion(tab.getPos());
-                //mc.setTareas(tab.getTareas());
                 if(tab.getTareas() != null) {
                     for (Tarea t : tab.getTareas()) {
                         if (!tareas.contains(t)) {
@@ -104,22 +97,11 @@ public class HelloIntentService extends IntentService {
                         }
                     }
                 }
-                //vpa.addFragments(mc, tab.getTitle());
-                //dv.getBacklog().add(tab);
-                //vpa.notifyDataSetChanged();
-                //if (tab.getPos() == 0)
-                  //  setTitle(tab.getTitle());
-                //findViewById(R.id.loadingPanel).setVisibility(View.GONE);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-                //Mensaje("Change");
-                //DatosVentanas dv = DatosVentanas.getInstance();
-                //ArrayList<Tab> tbs = dv.getBacklog();
-                //vpa.getItem(viewPager.getCurrentItem());
-                //vpa.notifyDataSetChanged();
-                tab = dataSnapshot.getValue(Tab.class);
+                tab = dataSnapshot.getValue(Tab.class); //Detecta la tabla en que hice el cambio
                 if(tab.getTareas() != null) {
                     for (Tarea t : tab.getTareas()) {
                         if (!tareas.contains(t)) {
@@ -127,9 +109,6 @@ public class HelloIntentService extends IntentService {
                         }
                     }
                 }
-                //vpa.setItem(t);
-                //vpa.notifyDataSetChanged();
-                //((Main_Content) vpa.getItem(t.getPos())).verificarParaInsertar();
 
             }
 

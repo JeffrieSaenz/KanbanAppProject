@@ -9,8 +9,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
         android:name="android.hardware.camera.any"
@@ -29,7 +28,9 @@
         <activity
             android:name=".IngresoItem"
             android:label="@string/title_activity_login" />
+
         <service android:name=".HelloIntentService" />
+
         <activity
             android:name=".Backlog"
             android:label="@string/title_activity_main"
@@ -41,7 +42,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TareaInfo"></activity>
+        <activity android:name=".TareaInfo" />
+        <activity
+            android:name=".IngresoNuevaTarea"
+            android:label="@string/title_activity_ingreso_nueva_tarea"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
