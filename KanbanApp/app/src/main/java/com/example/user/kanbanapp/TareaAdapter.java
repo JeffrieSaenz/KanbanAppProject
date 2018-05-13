@@ -112,17 +112,22 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
                                         case R.id.cam:
                                             /* AQUI ES DONDE HAY QUE PASARLO */
                                             checkPermission();
-
+                                            /*
                                             String path = Environment.getExternalStorageDirectory() + File.separator + "fotos" +
                                                 File.separator + "pic.jpg";
                                             File imagesFolder = new File(
                                                     Environment.getExternalStorageDirectory(), "fotos");
                                             imagesFolder.mkdirs();
-                                            File fileImage = new File(path);
-                                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                            File fileImage = new File(path);*/
+                                            //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                                             //intent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(fileImage));
-                                            intent.putExtra("pos",position);
-                                            ((Activity) context).startActivityForResult(intent,3434);
+                                            //intent.putExtra("pos",position);
+                                            //((Activity) context).startActivityForResult(intent,3434);
+                                            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                            if (takePictureIntent.resolveActivity(((Activity) context).getPackageManager()) != null) {
+                                                ((Activity) context).startActivityForResult(takePictureIntent, 3434);
+                                            }
+
                                             break;
                                         case R.id.viewTarea:
 

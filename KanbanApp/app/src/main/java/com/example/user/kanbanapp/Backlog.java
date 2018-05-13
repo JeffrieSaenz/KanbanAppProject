@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -375,14 +376,19 @@ public class Backlog extends AppCompatActivity {
             }
     }
 
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 3434 ) {
-            if (resultCode != 0) {
-                super.onActivityResult(requestCode, resultCode, data);
-                int p = data.getIntExtra("pos",0);
-                guardarImagenFirebase(p);
-            }
+        if (requestCode == 3434 && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            uploadFiles(getImageUri(this.getBaseContext(),imageBitmap),data.getIntExtra("pos",0));
         }
 
         if (requestCode == 123 && resultCode == Activity.RESULT_OK) {
@@ -394,13 +400,13 @@ public class Backlog extends AppCompatActivity {
             if (data != null) {
                 uri = data.getData();
                 Log.i("Get Files", "Uri: " + uri.toString());
-                uploadFiles(uri,data);
+                uploadFiles(uri,0);
                 Mensaje("Concluido....");
             }
         }
     }
 
-    private void uploadFiles(Uri uri,Intent data){
+    private void uploadFiles(Uri uri,Integer p){
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         String type = getContentResolver().getType(uri).split("/")[1];
@@ -426,7 +432,13 @@ public class Backlog extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                int x = viewPager.getCurrentItem();
+                tbs.get(x).getTareas().get(p).getImagenes().add(new Image(name,downloadUrl.toString()));
+                updateTabs();
+
                 Mensaje("SUCCESS");
+
             }
         });
     }
@@ -439,6 +451,7 @@ public class Backlog extends AppCompatActivity {
         parcelFileDescriptor.close();
         return image;
     }
+
 
     public void dumpImageMetaData(Uri uri) {
 
@@ -495,71 +508,6 @@ public class Backlog extends AppCompatActivity {
         alert11.show();
         ;
     }
-
-
-    public void guardarImagenFirebase(int p){
-        // Uso:
-        nombreImagen =  new EditText(this);
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-        builder1.setMessage("Digite el nombre de su imagen:");
-        nombreImagen.setText("Dato");
-        nombreImagen.selectAll();
-        builder1.setView(nombreImagen);
-
-        builder1.setCancelable(true);
-        builder1.setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        String path = Environment.getExternalStorageDirectory() + File.separator + "fotos" +
-                                File.separator + nombreImagen.getText().toString()+".jpg";
-
-                        MediaScannerConnection.scanFile(getBaseContext(), new String[]{path}, null,
-                                new MediaScannerConnection.OnScanCompletedListener() {
-                                    @Override
-                                    public void onScanCompleted(String path, Uri uri) {
-                                        Log.i("Path",""+path);
-                                    }});
-                        Uri file = Uri.fromFile(new File(path));
-                        FirebaseStorage storage = FirebaseStorage.getInstance();
-                        StorageReference storageRef = storage.getReference();
-                        StorageReference picRef = storageRef.child("images/"+nombreImagen.getText().toString()+".jpg");
-
-                        picRef.putFile(file)
-                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                    @Override
-                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                        // Get a URL to the uploaded content
-                                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                                        int x = viewPager.getCurrentItem();
-                                        tbs.get(x).getTareas().get(p).getImagenes().add(new Image(nombreImagen.getText().toString(),downloadUrl.toString()));
-                                        updateTabs();
-                                        //conn.addImageURL(tbs.get(x).getTitle(),String.valueOf(p),
-                                        //        nombreImagen.getText().toString(),downloadUrl.toString());
-                                        MensajeOK("Saved");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception exception) {
-                                        // Handle unsuccessful uploads
-                                        // ...
-                                        MensajeOK(exception.getMessage());
-                                    }
-                                });
-                    }
-                });
-
-        builder1.setNegativeButton("Cancelar",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Mensaje("Cancelado");
-                    }
-                });
-
-        AlertDialog alert11 = builder1.create();
-        alert11.show();
-    };
-
 
     
 }
