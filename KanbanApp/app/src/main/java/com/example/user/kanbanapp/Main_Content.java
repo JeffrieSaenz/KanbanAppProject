@@ -72,7 +72,7 @@ public class Main_Content extends android.support.v4.app.Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intento = new Intent(getContext(), IngresoItem.class);
+                Intent intento = new Intent(getContext(), IngresoNuevaTarea.class);
                 //Log.i ("Mi App", String.valueOf(getId()));
                 //Mensaje(String.valueOf(posicion));
                 intento.putExtra("pos",posicion);
@@ -84,7 +84,7 @@ public class Main_Content extends android.support.v4.app.Fragment {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int posItem, long arg3) {
                 vd = DatosVentanas.getInstance();
-                Intent intento = new Intent(getContext(), IngresoItem.class);
+                Intent intento = new Intent(getContext(), IngresoNuevaTarea.class);
                 intento.putExtra("posItem",posItem);
                 intento.putExtra("posPestana",posicion);
                 startActivity(intento);

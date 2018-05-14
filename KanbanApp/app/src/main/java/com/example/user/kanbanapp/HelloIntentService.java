@@ -87,7 +87,7 @@ public class HelloIntentService extends IntentService {
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-
+                tareas.clear();
                tab = dataSnapshot.getValue(Tab.class);//Detecta la tabla en que hice el cambio
 
                 if(tab.getTareas() != null) {
@@ -101,6 +101,7 @@ public class HelloIntentService extends IntentService {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+                tareas.clear();
                 tab = dataSnapshot.getValue(Tab.class); //Detecta la tabla en que hice el cambio
                 if(tab.getTareas() != null) {
                     for (Tarea t : tab.getTareas()) {
@@ -135,7 +136,7 @@ public class HelloIntentService extends IntentService {
         fechaHoy = new Date();
         for (Tarea t : tareas){
             if(fechaHoy.after(t.getFecha())){
-                System.out.println("La fecha "+ t +" está vencida");
+                System.out.println("La fecha "+ t.getFecha() +" está vencida");
                 Notificacion.creaNotificacion(cont++,"ALERTA: Tarea vencida!",
                         t.getNombre()+"",
                         "http://es.stackoverflow.com", getApplicationContext());

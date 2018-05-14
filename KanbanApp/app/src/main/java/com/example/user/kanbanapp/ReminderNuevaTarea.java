@@ -73,6 +73,9 @@ public class ReminderNuevaTarea extends Fragment {
         View view =inflater.inflate(R.layout.fragment_reminder_nueva_tarea, container, false);
         cv = (CalendarView) view.findViewById(R.id.calendarView3);
         DatosVentanas dv = DatosVentanas.getInstance();
+        if(dv.reminder != null){
+            cv.setDate(dv.reminder.getTime());
+        }
         dv.setDate(new Date(cv.getDate()));
         return view;
     }

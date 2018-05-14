@@ -169,11 +169,11 @@ public class Backlog extends AppCompatActivity {
 
 
             case R.id.video:
-                //Intent i = new Intent(Intent.ACTION_VIEW);
-                //i.setData(Uri.parse("https://youtu.be/CLgT_eRJbzM"));
-                //startActivity(i);
-                Intent intento = new Intent(getApplicationContext(), IngresoNuevaTarea.class);
-                startActivity(intento);
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse("https://youtu.be/CLgT_eRJbzM"));
+                startActivity(i);
+                //Intent intento = new Intent(getApplicationContext(), IngresoNuevaTarea.class);
+                //startActivity(intento);
 
 
                 break;
