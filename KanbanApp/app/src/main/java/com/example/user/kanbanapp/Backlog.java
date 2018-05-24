@@ -19,8 +19,12 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,8 +34,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.OptionalPendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
@@ -55,7 +68,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Backlog extends AppCompatActivity {
+public class Backlog extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
     /*
         TareaAdapter adapter;
@@ -72,6 +85,10 @@ public class Backlog extends AppCompatActivity {
     private ArrayList<Tab> tbs = new ArrayList<>();
     private ViewPagerAdapter vpa_aux;
     static EditText nombreImagen;
+
+
+    private GoogleApiClient googleApiClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +96,31 @@ public class Backlog extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+
+/*Nuevo*/
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+
+
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this,this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API,gso).build();
+
+        /*NUEVO*/
+
 
         viewPager = (ViewPager) findViewById(R.id.cont);
         initPagerAdapter();
@@ -113,16 +155,55 @@ public class Backlog extends AppCompatActivity {
 
         });
 
+
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        //Nuevo
+        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
+if(opr.isDone()){
+GoogleSignInResult result = opr.get();
+handleSignInResult(result);
+}else{
+opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+    @Override
+    public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
+        handleSignInResult(googleSignInResult);
+    }
+});
+}
         updateTabs();
 
         Intent intent = new Intent(this, HelloIntentService.class);
         startService(intent);
     }
+
+    private void handleSignInResult(GoogleSignInResult result) {
+if(result.isSuccess()){
+
+    TextView txt = (TextView)findViewById(R.id.nombreUser);
+    TextView txt2 = (TextView)findViewById(R.id.correo);
+    GoogleSignInAccount g = result.getSignInAccount();
+    //Mensaje(g.getDisplayName()+", "+g.getEmail());
+    txt.setText(g.getDisplayName());
+    txt2.setText(g.getEmail());
+}else{
+    Mensaje("No entró success");
+}
+    }
+
+
+    //Nuevo
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+    //Nuevo
+
 
     @Override
     protected void onRestart() {
@@ -456,6 +537,7 @@ public class Backlog extends AppCompatActivity {
         Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
         parcelFileDescriptor.close();
         return image;
+
     }
 
 
@@ -515,5 +597,42 @@ public class Backlog extends AppCompatActivity {
         ;
     }
 
+//_-------------------------------------------------------------Nuevo
+
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
     
 }

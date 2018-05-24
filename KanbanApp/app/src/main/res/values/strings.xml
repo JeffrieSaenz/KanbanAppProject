@@ -39,4 +39,11 @@
     <string name="tab_text_1">Item details</string>
     <string name="tab_text_2">Reminder</string>
     <string name="tab_text_3">Tab 3</string>
+    <string name="title_activity_login_firebase">Sign in</string>
+    <string name="title_activity_info_user">InfoUser</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nombre">Android Studio</string>
+    <string name="correo">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
 </resources>
