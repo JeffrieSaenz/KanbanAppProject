@@ -68,7 +68,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Backlog extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
+public class Backlog extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
     /*
         TareaAdapter adapter;
@@ -99,7 +99,7 @@ public class Backlog extends AppCompatActivity  implements NavigationView.OnNavi
 
 
 
-/*Nuevo*/
+        /*Nuevo*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -111,13 +111,12 @@ public class Backlog extends AppCompatActivity  implements NavigationView.OnNavi
         navigationView.setNavigationItemSelectedListener(this);
 
 
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
 
 
         googleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this,this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API,gso).build();
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
 
         /*NUEVO*/
 
@@ -156,7 +155,6 @@ public class Backlog extends AppCompatActivity  implements NavigationView.OnNavi
         });
 
 
-
     }
 
     @Override
@@ -164,36 +162,36 @@ public class Backlog extends AppCompatActivity  implements NavigationView.OnNavi
         super.onStart();
 
         //Nuevo
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
-if(opr.isDone()){
-GoogleSignInResult result = opr.get();
-handleSignInResult(result);
-}else{
-opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-    @Override
-    public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
-        handleSignInResult(googleSignInResult);
-    }
-});
-}
+/*        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
+        if (opr.isDone()) {
+            GoogleSignInResult result = opr.get();
+            handleSignInResult(result);
+        } else {
+            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                @Override
+                public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
+                    handleSignInResult(googleSignInResult);
+                }
+            });
+        }
         updateTabs();
 
         Intent intent = new Intent(this, HelloIntentService.class);
-        startService(intent);
+        startService(intent);*/
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-if(result.isSuccess()){
+        if (result.isSuccess()) {
 
-    TextView txt = (TextView)findViewById(R.id.nombreUser);
-    TextView txt2 = (TextView)findViewById(R.id.correo);
-    GoogleSignInAccount g = result.getSignInAccount();
-    //Mensaje(g.getDisplayName()+", "+g.getEmail());
-    txt.setText(g.getDisplayName());
-    txt2.setText(g.getEmail());
-}else{
-    Mensaje("No entró success");
-}
+            TextView txt = (TextView) findViewById(R.id.nombreUser);
+            TextView txt2 = (TextView) findViewById(R.id.correo);
+            GoogleSignInAccount g = result.getSignInAccount();
+            //Mensaje(g.getDisplayName()+", "+g.getEmail());
+            txt.setText(g.getDisplayName());
+            txt2.setText(g.getEmail());
+        } else {
+            Mensaje("No entró success");
+        }
     }
 
 
@@ -475,7 +473,7 @@ if(result.isSuccess()){
         if (requestCode == 3434 && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            uploadFiles(getImageUri(this.getBaseContext(),imageBitmap),data.getIntExtra("pos",0));
+            uploadFiles(getImageUri(this.getBaseContext(), imageBitmap), data.getIntExtra("pos", 0));
         }
 
         if (requestCode == 123 && resultCode == Activity.RESULT_OK) {
@@ -487,13 +485,13 @@ if(result.isSuccess()){
             if (data != null) {
                 uri = data.getData();
                 Log.i("Get Files", "Uri: " + uri.toString());
-                uploadFiles(uri,0);
+                uploadFiles(uri, 0);
                 Mensaje("Concluido....");
             }
         }
     }
 
-    private void uploadFiles(Uri uri,Integer p){
+    private void uploadFiles(Uri uri, Integer p) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         String type = getContentResolver().getType(uri).split("/")[1];
@@ -503,31 +501,32 @@ if(result.isSuccess()){
         int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
         returnCursor.moveToFirst();
         String name = returnCursor.getString(nameIndex);
-        String path = String.format("files/%s",name);
+        String path = String.format("files/%s", name);
         StorageReference fileRef = storageRef.child(path);
         Uri file = uri;
         fileRef.putFile(file)
-            .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                Mensaje(exception.getMessage());
-            }})
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        Mensaje(exception.getMessage());
+                    }
+                })
 
-            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                int x = viewPager.getCurrentItem();
-                tbs.get(x).getTareas().get(p).getImagenes().add(new Image(name,downloadUrl.toString()));
-                updateTabs();
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        int x = viewPager.getCurrentItem();
+                        tbs.get(x).getTareas().get(p).getImagenes().add(new Image(name, downloadUrl.toString()));
+                        updateTabs();
 
-                Mensaje("SUCCESS");
+                        Mensaje("SUCCESS");
 
-            }
-        });
+                    }
+                });
     }
 
     private Bitmap getBitmapFromUri(Uri uri) throws IOException {
@@ -634,5 +633,5 @@ if(result.isSuccess()){
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    
+
 }
