@@ -127,6 +127,8 @@ public class LoginActivity extends AppCompatActivity implements
                             //Mensaje(user.getDisplayName());
                             dv.loguearUsuario(new User(user.getDisplayName(), user.getEmail()));
                             intento = new Intent(getApplicationContext(), Backlog.class);
+                            intento.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intento.putExtra("Login",true);
                             updateUI(user);
                             if(task.isComplete()) {
                                 startActivity(intento);

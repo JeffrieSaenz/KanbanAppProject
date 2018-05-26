@@ -75,6 +75,7 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
 
     private GoogleApiClient googleApiClient;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Mensaje("onCreate");
@@ -140,6 +141,24 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
     }
 
     @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+        boolean bool = intent.getBooleanExtra("Login",false);
+        if(bool == true){
+            vpa = new ViewPagerAdapter(getSupportFragmentManager());
+            viewPager.setAdapter(vpa);
+            findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+            vd = DatosVentanas.getInstance();
+            vd.reiniciarDatos();
+            setTitle("New Tab");
+            MensajeOK(""+vd.getBacklog().size());
+            readTabs();
+        }
+    }
+
+
+    @Override
     protected void onStart() {
         super.onStart();
         vd = DatosVentanas.getInstance();
@@ -199,7 +218,6 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
     @Override
     protected void onResume() {
         super.onResume();
-        readTabs();
         vd = DatosVentanas.getInstance();
         TextView txt = (TextView) findViewById(R.id.nombreUser);
         TextView txt2 = (TextView) findViewById(R.id.correo);
