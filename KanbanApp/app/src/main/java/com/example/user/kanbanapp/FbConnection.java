@@ -15,6 +15,7 @@ public class FbConnection {
     private DatabaseReference mDatabase;
     private ArrayList<Tab> tabs;
     private boolean aux = false;
+    private DatosVentanas dv;
     private static FbConnection instance = null;
 
     public static FbConnection getInstance() {
@@ -26,6 +27,7 @@ public class FbConnection {
 
     public FbConnection() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        dv = DatosVentanas.getInstance();
     }
 
     public ArrayList<Tab> getTabs() {
@@ -50,7 +52,7 @@ public class FbConnection {
     }
 
     public void addTabs(Tab tab){
-        mDatabase.child("tabs").child(String.valueOf(tab.getPos())).setValue(tab);
+        mDatabase.child(dv.getUserlogged().getCorreo().split("@")[0]).child(String.valueOf(tab.getPos())).setValue(tab);
     }
 
     public void addImageURL(String a1,String a2,String a3,String a4){

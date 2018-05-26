@@ -11,12 +11,14 @@ public class DatosVentanas {
 
     private ArrayList<Tab> tabs = new ArrayList<>();
     Date reminder;
+    User userlogged;
 
     private static DatosVentanas instance = null;
 
 
     protected DatosVentanas() {
         // agregaInicial();
+        userlogged = null;
 
     }
 
@@ -53,6 +55,22 @@ public class DatosVentanas {
                 //t.getTareas().clear();
             }
         }
+    }
+
+    public void loguearUsuario(User u){
+        this.userlogged = u;
+    }
+
+    public void desloguearUsuario(){
+        this.userlogged = null;
+    }
+
+    public boolean nohayUsuario(){
+        return this.userlogged == null;
+    }
+
+    public User getUserlogged() {
+        return userlogged;
     }
 
     public void setDate(Date d)
