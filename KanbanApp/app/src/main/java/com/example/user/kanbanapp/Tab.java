@@ -33,9 +33,10 @@ public class Tab {
     }
 
     public ArrayList<Tarea> getTareas() {
+        if(tareas == null)
+            tareas = new ArrayList<>();
         return tareas;
     }
-
     public void setTareas(ArrayList<Tarea> tareas) {
         this.tareas = tareas;
     }

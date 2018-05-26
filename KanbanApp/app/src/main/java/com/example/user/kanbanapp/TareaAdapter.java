@@ -13,6 +13,7 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -32,7 +33,8 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
     private int rec = 0;
     private static final int READ_REQUEST_CODE = 42;
     Context mContext;
-
+    FbConnection conn;
+    ;
 
     public TareaAdapter(Context context, int layoutResourceId, ArrayList<Tarea> data, Integer pos) {
         super(context, layoutResourceId, data);
@@ -52,6 +54,7 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
             holder = new ViewHolder();
+            conn = FbConnection.getInstance();
             holder.textView1 = (TextView) row.findViewById(R.id.nombre);
             holder.textView2 = (TextView) row.findViewById(R.id.descripcion);
             holder.borrar = (ImageButton) row.findViewById(R.id.eliminarTarea);
@@ -94,10 +97,16 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
 
                     switch (v.getId()) {
                         case R.id.me:
-
+                            dv = DatosVentanas.getInstance();
                             PopupMenu popup = new PopupMenu(getContext().getApplicationContext(), v);
                             popup.getMenuInflater().inflate(R.menu.itemenu,
                                     popup.getMenu());
+                            SubMenu sbm = popup.getMenu().addSubMenu(0, 123, 1, "Move task to");
+                            for (int i = 0; i < dv.getBacklog().size(); i++)
+                                if (posPestana != i)
+                                    sbm.add(0, i * i, 1, dv.getBacklog().get(i).getTitle());
+
+
                             popup.show();
                             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                                 @Override
@@ -106,7 +115,7 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
                                     switch (item.getItemId()) {
                                         case R.id.cam:
                                             /* AQUI ES DONDE HAY QUE PASARLO */
-                                            checkPermission();
+                                            //checkPermission(position);
                                             /*
                                             String path = Environment.getExternalStorageDirectory() + File.separator + "fotos" +
                                                 File.separator + "pic.jpg";
@@ -118,9 +127,11 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
                                             //intent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(fileImage));
                                             //intent.putExtra("pos",position);
                                             //((Activity) context).startActivityForResult(intent,3434);
+
                                             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                                             if (takePictureIntent.resolveActivity(((Activity) context).getPackageManager()) != null) {
-                                                ((Activity) context).startActivityForResult(takePictureIntent, 3434);
+                                               // int p = pos - 1000;
+                                                ((Activity) context).startActivityForResult(takePictureIntent, position);
                                             }
 
                                             break;
@@ -133,10 +144,23 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
                                             ((Activity) context).startActivity(intento);
 
                                             break;
+
                                         case R.id.filechooser:
                                             filechooserEvent(position);
                                             break;
                                         default:
+                                            for (int i = 0; i < dv.getBacklog().size(); i++) {
+                                                if (item.getItemId() == i * i) {
+                                                    ArrayList<Tab> tbs = dv.getBacklog();
+                                                    Tarea t = tbs.get(posPestana).getTareas().get(position);
+                                                    tbs.get(posPestana).getTareas().remove(t);
+                                                    tbs.get(i).getTareas().add(t);
+                                                    for (Tab ta : tbs)
+                                                        conn.addTabs(ta);
+                                                    notifyDataSetChanged();
+
+                                                }
+                                            }
                                             break;
                                     }
 
@@ -164,17 +188,17 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
 
 
     @TargetApi(Build.VERSION_CODES.M)
-    private void checkPermission() {
+    private void checkPermission(int pos) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             int permission = ((Activity) context).checkSelfPermission("Manifest.permission.CAMERA");
             permission += ((Activity) context).checkSelfPermission("Manifest.permission.CAMERA");
             if (permission != 0) {
-                ((Activity) context).requestPermissions(new String[]{Manifest.permission.CAMERA}, 1001);
+                int p = 1000 + pos;
+                ((Activity) context).requestPermissions(new String[]{Manifest.permission.CAMERA}, p);
             }
         }
 
     }
-
 
 
     static class ViewHolder {
@@ -187,12 +211,12 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
 
     }
 
-    public void filechooserEvent(int position){
+    public void filechooserEvent(int position) {
         Intent intent = new Intent()
                 .setType("*/*")
                 .setAction(Intent.ACTION_GET_CONTENT);
-        intent.putExtra("pos",position);
-        ((Activity) context).startActivityForResult(Intent.createChooser(intent, "Buscar un archivo"), 123);
+        intent.putExtra("pos", position);
+        ((Activity) context).startActivityForResult(Intent.createChooser(intent, "Buscar un archivo"), position);
 
     }
 }

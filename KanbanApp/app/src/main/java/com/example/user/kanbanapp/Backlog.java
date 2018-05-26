@@ -1,26 +1,22 @@
 package com.example.user.kanbanapp;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -34,7 +30,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,24 +50,17 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import junit.framework.Test;
-
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Backlog extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
-
 
     DatosVentanas vd;
 
@@ -169,12 +157,13 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
             opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
                 @Override
                 public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
-                    handleSignInResult(googleSignInResult);
+                    //handleSignInResult(googleSignInResult);
                 }
             });
         }
         updateTabs();
 
+        checkPermission(0);
         Intent intent = new Intent(this, HelloIntentService.class);
         startService(intent);
     }
@@ -187,7 +176,6 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
             GoogleSignInAccount g = result.getSignInAccount();
             txt.setText(g.getDisplayName());
             txt2.setText(g.getEmail());
-        } else {
         }
     }
 
@@ -219,7 +207,6 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
             txt.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
             txt2.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
         }
-
     }
 
     public void Mensaje(String msg) {
@@ -242,26 +229,19 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
             case R.id.add_tab:
                 addNewTab();
                 break;
-
             case R.id.editTab:
                 if (vpa.getCount() == 0)
                     Mensaje("Please, create a new Tab");
                 else
                     editTab();
                 break;
-
-
             case R.id.video:
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse("https://youtu.be/CLgT_eRJbzM"));
                 startActivity(i);
                 //Intent intento = new Intent(getApplicationContext(), IngresoNuevaTarea.class);
                 //startActivity(intento);
-
-
                 break;
-
-
             default:
                 Mensaje("No clasificado");
                 break;
@@ -283,7 +263,6 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
        /* conn = FbConnection.getInstance();
         //vd = DatosVentanas.getInstance();
         //vd.agregaInicial();
-
         //vpa.addFragments(new Main_Content(), "New one");
         Main_Content mc = new Main_Content();
         mc.setPosicion(0);
@@ -299,10 +278,8 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
     public void verificar() {
         conn = FbConnection.getInstance();
         //conn.readTabs();
-
         ArrayList<Tab> tbs = conn.getTabs();
         Mensaje("TABS:" + tbs.size());
-
         if (tbs.isEmpty())
             addFIni();
         else {
@@ -386,6 +363,18 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
         //viewPager.setAdapter(vpa);
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
+    private void checkPermission(int pos) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            int permission = checkSelfPermission("Manifest.permission.CAMERA");
+            permission += checkSelfPermission("Manifest.permission.CAMERA");
+            if (permission != 0) {
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, 10);
+            }
+        }
+
+    }
+
     public void readTabs() {
 
         tbs = new ArrayList<>();
@@ -432,12 +421,14 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
                 DatosVentanas dv = DatosVentanas.getInstance();
                 ArrayList<Tab> tbs = dv.getBacklog();
                 vpa.getItem(viewPager.getCurrentItem());
-                vpa.notifyDataSetChanged();
+                //vpa.notifyDataSetChanged();
                 Tab t = dataSnapshot.getValue(Tab.class);
                 vpa.setItem(t);
+                //tbs.set(t.getPos(),t);
+                dv.getBacklog().get(t.getPos()).setTareas(t.getTareas());
+                //dv.getBacklog().set(t.getPos(),t);
                 vpa.notifyDataSetChanged();
                 ((Main_Content) vpa.getItem(t.getPos())).verificarParaInsertar();
-
             }
 
             @Override
@@ -467,6 +458,7 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
             for (Tab t : tbs) {
                 conn.addTabs(t);
                 vpa.notifyDataSetChanged();
+                //t.getTareas().clear();
             }
     }
 
@@ -479,13 +471,15 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 3434 && resultCode == RESULT_OK) {
+       /* if (requestCode == 3434 && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             uploadFiles(getImageUri(this.getBaseContext(), imageBitmap), data.getIntExtra("pos", 0));
         }
 
-        if (requestCode == 123 && resultCode == Activity.RESULT_OK) {
+*/
+        //Activity.CAMERA_SERVICE
+        if (resultCode == Activity.RESULT_OK) {
             // The document selected by the user won't be returned in the intent.
             // Instead, a URI to that document will be contained in the return intent
             // provided to this method as a parameter.
@@ -494,7 +488,10 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
             if (data != null) {
                 uri = data.getData();
                 Log.i("Get Files", "Uri: " + uri.toString());
-                uploadFiles(uri, 0);
+               int pos = requestCode;
+                uploadFiles(uri, pos);
+
+
                 Mensaje("Concluido....");
             }
         }
@@ -529,9 +526,18 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
                         //Uri downloadUrl = taskSnapshot.getDownloadUrl();
                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
                         int x = viewPager.getCurrentItem();
-                        tbs.get(x).getTareas().get(p).getImagenes().add(new Image(name, downloadUrl.toString()));
-                        updateTabs();
 
+                        if (tbs.get(x).getTareas().get(p).getListFiles() == null) {
+                            ArrayList<File> files = new ArrayList<>();
+                            files.add(new File(name, downloadUrl.toString()));
+                            tbs.get(x).getTareas().get(p).setListFiles(files);
+                        } else {
+                            ArrayList<File> files = tbs.get(x).getTareas().get(p).getListFiles();
+                            files.add(new File(name, downloadUrl.toString()));
+                            tbs.get(x).getTareas().get(p).setListFiles(files);
+                            //.add(new File(name, downloadUrl.toString()));
+                        }
+                        updateTabs();
                         Mensaje("SUCCESS");
 
                     }
@@ -650,12 +656,14 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
         startActivity(i);
     }
 
+
     public void mostrarDatosDeUsuario() {
         TextView labelNombre = (TextView) findViewById(R.id.nombreUser);
         TextView labelCorreo = (TextView) findViewById(R.id.correo);
         if (labelNombre != null) {
             labelNombre.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
             labelCorreo.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+
         }
     }
 

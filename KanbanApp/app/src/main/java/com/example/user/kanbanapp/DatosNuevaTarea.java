@@ -150,7 +150,6 @@ public class DatosNuevaTarea extends Fragment {
                                                 txtNombre.getText().toString(),
                                                 txtDescripcion.getText().toString(),new ArrayList<>(), new Date(ReminderNuevaTarea.cv.getDate()))
                                         , pos
-
                                 );
                             } else {
                                 if (dv.getTab(posPestana) != null) {
