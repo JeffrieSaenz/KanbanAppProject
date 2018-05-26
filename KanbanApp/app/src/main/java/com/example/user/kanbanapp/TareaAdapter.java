@@ -106,7 +106,7 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
                                     switch (item.getItemId()) {
                                         case R.id.cam:
                                             /* AQUI ES DONDE HAY QUE PASARLO */
-                                            checkPermission();
+                                            //checkPermission(position);
                                             /*
                                             String path = Environment.getExternalStorageDirectory() + File.separator + "fotos" +
                                                 File.separator + "pic.jpg";
@@ -118,9 +118,11 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
                                             //intent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(fileImage));
                                             //intent.putExtra("pos",position);
                                             //((Activity) context).startActivityForResult(intent,3434);
+
                                             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                                             if (takePictureIntent.resolveActivity(((Activity) context).getPackageManager()) != null) {
-                                                ((Activity) context).startActivityForResult(takePictureIntent, 3434);
+                                               // int p = pos - 1000;
+                                                ((Activity) context).startActivityForResult(takePictureIntent, position);
                                             }
 
                                             break;
@@ -164,12 +166,13 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
 
 
     @TargetApi(Build.VERSION_CODES.M)
-    private void checkPermission() {
+    private void checkPermission(int pos) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             int permission = ((Activity) context).checkSelfPermission("Manifest.permission.CAMERA");
             permission += ((Activity) context).checkSelfPermission("Manifest.permission.CAMERA");
             if (permission != 0) {
-                ((Activity) context).requestPermissions(new String[]{Manifest.permission.CAMERA}, 1001);
+                int p = 1000 + pos;
+                ((Activity) context).requestPermissions(new String[]{Manifest.permission.CAMERA}, p);
             }
         }
 

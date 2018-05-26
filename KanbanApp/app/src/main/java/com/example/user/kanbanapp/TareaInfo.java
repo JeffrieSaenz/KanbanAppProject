@@ -41,11 +41,11 @@ public class TareaInfo extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tarea_info);
-        viewPager = (ViewPager) findViewById(R.id.cont);
-        initPagerAdapter();
-        viewPager.setAdapter(vpa);
+        //      viewPager = (ViewPager) findViewById(R.id.cont);
+        //    initPagerAdapter();
+//        viewPager.setAdapter(vpa);
         readTabs();
-        addImages();
+        //addImages();
         //readImages();
     }
 
@@ -54,10 +54,14 @@ public class TareaInfo extends AppCompatActivity {
     }
 
     public void readTabs() {
+        Intent callingIntent = getIntent();
+        //int tab = callingIntent.getIntExtra("tab", 1);
+        //int tar = callingIntent.getIntExtra("pos", 1);
         tbs = new ArrayList<>();
         ViewPagerAdapter vpa_db = new ViewPagerAdapter(getSupportFragmentManager());
         DatosVentanas dv = DatosVentanas.getInstance();
-        DatabaseReference mtabs = FirebaseDatabase.getInstance().getReference("tabs");
+        String base = dv.getUserlogged().getCorreo().split("@")[0];
+        DatabaseReference mtabs = FirebaseDatabase.getInstance().getReference(base);
         mtabs.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -77,12 +81,17 @@ public class TareaInfo extends AppCompatActivity {
                 Intent callingIntent = getIntent();
                 int posTarea = callingIntent.getIntExtra("pos", 1);
                 int posTab = callingIntent.getIntExtra("tab", 1);
-                ArrayList<File> imgs = t.getTareas().get(posTarea).getListFiles();
-                for(int i = 0 ; i < imgs.size(); i++) {
-                    File name = t.getTareas().get(posTarea).getListFiles().get(i);
-                    images.add(name);
+                if (t.getPos() == posTab) {
+                    ArrayList<Tarea> tareas = t.getTareas();
+                    if (tareas.get(posTarea) != null) {
+                        ArrayList<File> imgs = tareas.get(posTarea).getListFiles();
+                        for (int i = 0; i < imgs.size(); i++) {
+                            File name = tareas.get(posTarea).getListFiles().get(i);
+                            images.add(name);
+                        }
+                        addImages();
+                    }
                 }
-                //addImages();
             }
 
             @Override
@@ -115,17 +124,22 @@ public class TareaInfo extends AppCompatActivity {
         list.setAdapter(adapter);
     }
 
-    public void MensajeOK(String msg){
+    public void MensajeOK(String msg) {
         View v1 = getWindow().getDecorView().getRootView();
-        AlertDialog.Builder builder1 = new AlertDialog.Builder( v1.getContext());
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(v1.getContext());
         builder1.setMessage(msg);
         builder1.setCancelable(true);
         builder1.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {} });
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
         AlertDialog alert11 = builder1.create();
         alert11.show();
-        ;};
+        ;
+    }
+
+    ;
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
@@ -139,7 +153,7 @@ public class TareaInfo extends AppCompatActivity {
             Bitmap bitmap = null;
             try {
                 URL url = new URL(urls[0]);
-                bitmap = BitmapFactory.decodeStream((InputStream)url.getContent());
+                bitmap = BitmapFactory.decodeStream((InputStream) url.getContent());
             } catch (IOException e) {
                 //Log.e(TAG, e.getMessage());
             }
@@ -155,6 +169,7 @@ public class TareaInfo extends AppCompatActivity {
         public MyListAdapter() {
             super(TareaInfo.this, R.layout.image, images);
         }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             // Make sure we have a view to work with (may have been given null)
@@ -164,25 +179,21 @@ public class TareaInfo extends AppCompatActivity {
             }
             File ObjetoActual = images.get(position);
             // Fill the view
-            ImageView im = (ImageView)itemView.findViewById(R.id.imageViewI);
+            ImageView im = (ImageView) itemView.findViewById(R.id.imageViewI);
 
             URL imageUrl = null;
             HttpURLConnection conn = null;
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
             try {
-
                 imageUrl = new URL(ObjetoActual.getLink());
                 conn = (HttpURLConnection) imageUrl.openConnection();
                 conn.connect();
                 Bitmap imagen = BitmapFactory.decodeStream(conn.getInputStream());
-
                 im.setImageBitmap(imagen);
-
             } catch (IOException e) {
 
                 e.printStackTrace();
-
             }
             TextView elatributo01 = (TextView) itemView.findViewById(R.id.paraelatributo01);
             elatributo01.setText(ObjetoActual.getName());
