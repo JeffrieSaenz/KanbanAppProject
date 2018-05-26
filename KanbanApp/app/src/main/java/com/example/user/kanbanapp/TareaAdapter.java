@@ -13,6 +13,7 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -32,7 +33,8 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
     private int rec = 0;
     private static final int READ_REQUEST_CODE = 42;
     Context mContext;
-
+    FbConnection conn;
+    ;
 
     public TareaAdapter(Context context, int layoutResourceId, ArrayList<Tarea> data, Integer pos) {
         super(context, layoutResourceId, data);
@@ -52,6 +54,7 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
             holder = new ViewHolder();
+            conn = FbConnection.getInstance();
             holder.textView1 = (TextView) row.findViewById(R.id.nombre);
             holder.textView2 = (TextView) row.findViewById(R.id.descripcion);
             holder.borrar = (ImageButton) row.findViewById(R.id.eliminarTarea);
@@ -94,10 +97,16 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
 
                     switch (v.getId()) {
                         case R.id.me:
-
+                            dv = DatosVentanas.getInstance();
                             PopupMenu popup = new PopupMenu(getContext().getApplicationContext(), v);
                             popup.getMenuInflater().inflate(R.menu.itemenu,
                                     popup.getMenu());
+                            SubMenu sbm = popup.getMenu().addSubMenu(0, 123, 1, "Move task to");
+                            for (int i = 0; i < dv.getBacklog().size(); i++)
+                                if (posPestana != i)
+                                    sbm.add(0, i * i, 1, dv.getBacklog().get(i).getTitle());
+
+
                             popup.show();
                             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                                 @Override
@@ -135,10 +144,23 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
                                             ((Activity) context).startActivity(intento);
 
                                             break;
+
                                         case R.id.filechooser:
                                             filechooserEvent(position);
                                             break;
                                         default:
+                                            for (int i = 0; i < dv.getBacklog().size(); i++) {
+                                                if (item.getItemId() == i * i) {
+                                                    ArrayList<Tab> tbs = dv.getBacklog();
+                                                    Tarea t = tbs.get(posPestana).getTareas().get(position);
+                                                    tbs.get(posPestana).getTareas().remove(t);
+                                                    tbs.get(i).getTareas().add(t);
+                                                    for (Tab ta : tbs)
+                                                        conn.addTabs(ta);
+                                                    notifyDataSetChanged();
+
+                                                }
+                                            }
                                             break;
                                     }
 
@@ -179,7 +201,6 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
     }
 
 
-
     static class ViewHolder {
         TextView textView1;
         TextView textView2;
@@ -190,11 +211,11 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
 
     }
 
-    public void filechooserEvent(int position){
+    public void filechooserEvent(int position) {
         Intent intent = new Intent()
                 .setType("*/*")
                 .setAction(Intent.ACTION_GET_CONTENT);
-        intent.putExtra("pos",position);
+        intent.putExtra("pos", position);
         ((Activity) context).startActivityForResult(Intent.createChooser(intent, "Buscar un archivo"), position);
 
     }
