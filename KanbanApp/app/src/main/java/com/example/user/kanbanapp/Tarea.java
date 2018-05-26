@@ -1,8 +1,6 @@
 package com.example.user.kanbanapp;
-import java.lang.Exception;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.EmptyStackException;
 
 /**
  * Created by User on 10/04/2018.
@@ -13,26 +11,26 @@ public class Tarea {
     private String nombre;
     private String descripcion;
     private int prioridad;
-    private ArrayList<Image> imagenes;
+    private ArrayList<File> listFiles;
     private Date fecha;
 
-    public Tarea(String n, String d, ArrayList<Image> a, Date f){
+    public Tarea(String n, String d, ArrayList<File> a, Date f){
         this.nombre = n;
         this.descripcion = d;
         this.prioridad = 0;
-        this.imagenes = a;
+        this.listFiles = a;
         this.fecha = f;
     }
 
     public Tarea() {
     }
 
-    public ArrayList<Image> getImagenes() {
-        return (imagenes != null) ? imagenes : new ArrayList<Image>();
+    public ArrayList<File> getListFiles() {
+        return (listFiles != null) ? listFiles : new ArrayList<File>();
     }
 
-    public void setImagenes(ArrayList<Image> imagenes) {
-        this.imagenes = imagenes;
+    public void setListFiles(ArrayList<File> listFiles) {
+        this.listFiles = listFiles;
     }
 
     public void setFecha(Date fecha) {

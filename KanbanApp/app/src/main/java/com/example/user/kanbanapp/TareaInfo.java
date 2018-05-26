@@ -7,11 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.StrictMode;
-import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -19,33 +17,25 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 public class TareaInfo extends AppCompatActivity {
 
     public ViewPagerAdapter vpa;
     public ViewPager viewPager;
     private ArrayList<Tab> tbs = new ArrayList<>();
-    ArrayList<Image> images = new ArrayList<>();
+    ArrayList<File> images = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,9 +77,9 @@ public class TareaInfo extends AppCompatActivity {
                 Intent callingIntent = getIntent();
                 int posTarea = callingIntent.getIntExtra("pos", 1);
                 int posTab = callingIntent.getIntExtra("tab", 1);
-                ArrayList<Image> imgs = t.getTareas().get(posTarea).getImagenes();
+                ArrayList<File> imgs = t.getTareas().get(posTarea).getListFiles();
                 for(int i = 0 ; i < imgs.size(); i++) {
-                    Image name = t.getTareas().get(posTarea).getImagenes().get(i);
+                    File name = t.getTareas().get(posTarea).getListFiles().get(i);
                     images.add(name);
                 }
                 //addImages();
@@ -120,7 +110,7 @@ public class TareaInfo extends AppCompatActivity {
     }
 
     public void addImages() {
-        ArrayAdapter<Image> adapter = new MyListAdapter();
+        ArrayAdapter<File> adapter = new MyListAdapter();
         ListView list = (ListView) findViewById(R.id.listViewImage);
         list.setAdapter(adapter);
     }
@@ -161,7 +151,7 @@ public class TareaInfo extends AppCompatActivity {
         }
     }
 
-    private class MyListAdapter extends ArrayAdapter<Image> {
+    private class MyListAdapter extends ArrayAdapter<File> {
         public MyListAdapter() {
             super(TareaInfo.this, R.layout.image, images);
         }
@@ -172,7 +162,7 @@ public class TareaInfo extends AppCompatActivity {
             if (itemView == null) {
                 itemView = getLayoutInflater().inflate(R.layout.image, parent, false);
             }
-            Image ObjetoActual = images.get(position);
+            File ObjetoActual = images.get(position);
             // Fill the view
             ImageView im = (ImageView)itemView.findViewById(R.id.imageViewI);
 
@@ -182,7 +172,7 @@ public class TareaInfo extends AppCompatActivity {
             StrictMode.setThreadPolicy(policy);
             try {
 
-                imageUrl = new URL(ObjetoActual.getAtributo02());
+                imageUrl = new URL(ObjetoActual.getLink());
                 conn = (HttpURLConnection) imageUrl.openConnection();
                 conn.connect();
                 Bitmap imagen = BitmapFactory.decodeStream(conn.getInputStream());
@@ -195,7 +185,7 @@ public class TareaInfo extends AppCompatActivity {
 
             }
             TextView elatributo01 = (TextView) itemView.findViewById(R.id.paraelatributo01);
-            elatributo01.setText(ObjetoActual.getAtributo01());
+            elatributo01.setText(ObjetoActual.getName());
             return itemView;
         }
     }

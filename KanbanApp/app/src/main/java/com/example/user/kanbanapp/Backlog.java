@@ -1,26 +1,19 @@
 package com.example.user.kanbanapp;
 
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -33,7 +26,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,8 +35,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
@@ -52,21 +42,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import junit.framework.Test;
-
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Backlog extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
@@ -161,8 +145,10 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
     protected void onStart() {
         super.onStart();
 
+        //updateTabs();
+/*
         //Nuevo
-/*        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
+       OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
         if (opr.isDone()) {
             GoogleSignInResult result = opr.get();
             handleSignInResult(result);
@@ -173,9 +159,9 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
                     handleSignInResult(googleSignInResult);
                 }
             });
-        }
+        }*/
         updateTabs();
-
+/*
         Intent intent = new Intent(this, HelloIntentService.class);
         startService(intent);*/
     }
@@ -423,12 +409,14 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
                 DatosVentanas dv = DatosVentanas.getInstance();
                 ArrayList<Tab> tbs = dv.getBacklog();
                 vpa.getItem(viewPager.getCurrentItem());
-                vpa.notifyDataSetChanged();
+                //vpa.notifyDataSetChanged();
                 Tab t = dataSnapshot.getValue(Tab.class);
                 vpa.setItem(t);
+                //tbs.set(t.getPos(),t);
+                dv.getBacklog().get(t.getPos()).setTareas(t.getTareas());
+                //dv.getBacklog().set(t.getPos(),t);
                 vpa.notifyDataSetChanged();
                 ((Main_Content) vpa.getItem(t.getPos())).verificarParaInsertar();
-
             }
 
             @Override
@@ -458,6 +446,7 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
             for (Tab t : tbs) {
                 conn.addTabs(t);
                 vpa.notifyDataSetChanged();
+                //t.getTareas().clear();
             }
     }
 
@@ -470,13 +459,13 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 3434 && resultCode == RESULT_OK) {
+       /* if (requestCode == 3434 && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             uploadFiles(getImageUri(this.getBaseContext(), imageBitmap), data.getIntExtra("pos", 0));
         }
-
-        if (requestCode == 123 && resultCode == Activity.RESULT_OK) {
+*/
+        if (resultCode == Activity.RESULT_OK) {
             // The document selected by the user won't be returned in the intent.
             // Instead, a URI to that document will be contained in the return intent
             // provided to this method as a parameter.
@@ -485,7 +474,8 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
             if (data != null) {
                 uri = data.getData();
                 Log.i("Get Files", "Uri: " + uri.toString());
-                uploadFiles(uri, 0);
+                int pos = requestCode;
+                uploadFiles(uri, pos);
                 Mensaje("Concluido....");
             }
         }
@@ -520,11 +510,20 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
                         //Uri downloadUrl = taskSnapshot.getDownloadUrl();
                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
                         int x = viewPager.getCurrentItem();
-                        tbs.get(x).getTareas().get(p).getImagenes().add(new Image(name, downloadUrl.toString()));
+
+                        if(tbs.get(x).getTareas().get(p).getListFiles() == null){
+                            ArrayList<File> files = new ArrayList<>();
+                            files.add(new File(name, downloadUrl.toString()));
+                            tbs.get(x).getTareas().get(p).setListFiles(files);
+                        }
+                        else{
+                            ArrayList<File> files = tbs.get(x).getTareas().get(p).getListFiles();
+                            files.add(new File(name, downloadUrl.toString()));
+                            tbs.get(x).getTareas().get(p).setListFiles(files);
+                            //.add(new File(name, downloadUrl.toString()));
+                        }
                         updateTabs();
-
                         Mensaje("SUCCESS");
-
                     }
                 });
     }

@@ -192,7 +192,7 @@ public class TareaAdapter extends ArrayAdapter<Tarea> {
                 .setType("*/*")
                 .setAction(Intent.ACTION_GET_CONTENT);
         intent.putExtra("pos",position);
-        ((Activity) context).startActivityForResult(Intent.createChooser(intent, "Buscar un archivo"), 123);
+        ((Activity) context).startActivityForResult(Intent.createChooser(intent, "Buscar un archivo"), position);
 
     }
 }

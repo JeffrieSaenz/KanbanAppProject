@@ -45,12 +45,14 @@ public class DatosVentanas {
 
     public void agregarTareaBacklog(Tarea a, Integer i) {
 
-        for(Tab t : tabs)
+        for(Tab t : tabs){
             if(t.getPos() == i) {
                 if(t.getTareas() == null)
                     t.setTareas(new ArrayList<Tarea>());
                 t.getTareas().add(a);
+                //t.getTareas().clear();
             }
+        }
     }
 
     public void setDate(Date d)
