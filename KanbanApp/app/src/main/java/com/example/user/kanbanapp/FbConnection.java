@@ -2,6 +2,7 @@ package com.example.user.kanbanapp;
 
 import android.content.Intent;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,7 +53,7 @@ public class FbConnection {
     }
 
     public void addTabs(Tab tab){
-        mDatabase.child(dv.getUserlogged().getCorreo().split("@")[0]).child(String.valueOf(tab.getPos())).setValue(tab);
+        mDatabase.child(FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0]).child(String.valueOf(tab.getPos())).setValue(tab);
     }
 
     public void addImageURL(String a1,String a2,String a3,String a4){

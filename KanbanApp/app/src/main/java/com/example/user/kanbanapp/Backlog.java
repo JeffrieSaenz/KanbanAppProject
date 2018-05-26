@@ -48,6 +48,8 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -69,15 +71,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Backlog extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
+public class Backlog extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
-    /*
-        TareaAdapter adapter;
-        EditText editText;
-        EditText editText2;
-        List<Tarea> itemList;
-        DatosVentanas vd;
-    */
+
     DatosVentanas vd;
 
     public ViewPagerAdapter vpa;
@@ -86,21 +82,23 @@ public class Backlog extends AppCompatActivity  implements NavigationView.OnNavi
     private ArrayList<Tab> tbs = new ArrayList<>();
     private ViewPagerAdapter vpa_aux;
     static EditText nombreImagen;
-
+    private FirebaseAuth mAuth;
+    private Intent intento;
 
     private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Mensaje("onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_backlog);
+        Intent intento = new Intent();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //verifyUserLogged(FirebaseAuth.getInstance().getCurrentUser());
 
-
-
-/*Nuevo*/
+        /*Nuevo*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -112,30 +110,23 @@ public class Backlog extends AppCompatActivity  implements NavigationView.OnNavi
         navigationView.setNavigationItemSelectedListener(this);
 
 
-
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
 
 
         googleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this,this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API,gso).build();
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
 
         /*NUEVO*/
 
-
         viewPager = (ViewPager) findViewById(R.id.cont);
         initPagerAdapter();
-        //viewPager = new ViewPager(this);
-
-        //mViewPager.setAdapter(mSectionsPagerAdapter);
-        //addFIni();
         viewPager.setAdapter(vpa);
         //verificar();
         findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
         readTabs();
 
-        //Mensaje("Regrese");
+
 
         //this.setTitle(vpa.getPageTitle(viewPager.getCurrentItem()));
 
@@ -158,31 +149,30 @@ public class Backlog extends AppCompatActivity  implements NavigationView.OnNavi
         });
 
 
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         vd = DatosVentanas.getInstance();
-TextView txt = (TextView) findViewById(R.id.nombreUser);
+        TextView txt = (TextView) findViewById(R.id.nombreUser);
         Intent callingIntent = getIntent();
         //txt.setText(callingIntent.getStringExtra("user"));
         //txt2.setText(callingIntent.getStringExtra("email"));
         //Nuevo
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
-    if(opr.isDone()){
-    //GoogleSignInResult result = opr.get();
-    //handleSignInResult(result);
+        if (opr.isDone()) {
+            //GoogleSignInResult result = opr.get();
+            //handleSignInResult(result);
 
-    }else{
-    opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-    @Override
-    public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
-        handleSignInResult(googleSignInResult);
-    }
-});
-}
+        } else {
+            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                @Override
+                public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
+                    handleSignInResult(googleSignInResult);
+                }
+            });
+        }
         updateTabs();
 
         Intent intent = new Intent(this, HelloIntentService.class);
@@ -190,17 +180,15 @@ TextView txt = (TextView) findViewById(R.id.nombreUser);
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-if(result.isSuccess()){
+        if (result.isSuccess()) {
 
-    TextView txt = (TextView)findViewById(R.id.nombreUser);
-    TextView txt2 = (TextView)findViewById(R.id.correo);
-    GoogleSignInAccount g = result.getSignInAccount();
-    //Mensaje(g.getDisplayName()+", "+g.getEmail());
-    txt.setText(g.getDisplayName());
-    txt2.setText(g.getEmail());
-}else{
-    Mensaje("No entró success");
-}
+            TextView txt = (TextView) findViewById(R.id.nombreUser);
+            TextView txt2 = (TextView) findViewById(R.id.correo);
+            GoogleSignInAccount g = result.getSignInAccount();
+            txt.setText(g.getDisplayName());
+            txt2.setText(g.getEmail());
+        } else {
+        }
     }
 
 
@@ -215,23 +203,21 @@ if(result.isSuccess()){
     @Override
     protected void onRestart() {
         super.onRestart();
+        Mensaje("onRestart");
         // addFragment();
         //addFIni();
-        //Mensaje("Pase por onRestart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
+        readTabs();
         vd = DatosVentanas.getInstance();
-        TextView txt = (TextView)findViewById(R.id.nombreUser);
-        TextView txt2 = (TextView)findViewById(R.id.correo);
-        if(txt != null) {
-            txt.setText(vd.getUserlogged().getNombre());
-            txt2.setText(vd.getUserlogged().getCorreo());
-        }else{
-            Mensaje("nulllll");
+        TextView txt = (TextView) findViewById(R.id.nombreUser);
+        TextView txt2 = (TextView) findViewById(R.id.correo);
+        if (txt != null) {
+            txt.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+            txt2.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
         }
 
     }
@@ -240,7 +226,7 @@ if(result.isSuccess()){
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
-    Intent intento = new Intent();
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -254,7 +240,6 @@ if(result.isSuccess()){
         int id = item.getItemId();
         switch (id) {
             case R.id.add_tab:
-                Mensaje("Primero");
                 addNewTab();
                 break;
 
@@ -402,12 +387,14 @@ if(result.isSuccess()){
     }
 
     public void readTabs() {
+
         tbs = new ArrayList<>();
         ViewPagerAdapter vpa_db = new ViewPagerAdapter(getSupportFragmentManager());
         DatosVentanas dv = DatosVentanas.getInstance();
-        DatabaseReference mtabs = FirebaseDatabase.getInstance().getReference(dv.getUserlogged().getCorreo().split("@")[0]);
+
+        DatabaseReference mtabs = FirebaseDatabase.getInstance().getReference(FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0]);
         mtabs.addValueEventListener(new ValueEventListener() {
-            @Override
+            @Override 
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.hasChildren()) {
                     findViewById(R.id.loadingPanel).setVisibility(View.GONE);
@@ -425,7 +412,6 @@ if(result.isSuccess()){
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
 
                 Tab tab = dataSnapshot.getValue(Tab.class);
-                //Mensaje("TAB: " + tab.getTitle());
                 tbs.add(tab);
                 Main_Content mc = new Main_Content();
                 mc.setPosicion(tab.getPos());
@@ -436,14 +422,13 @@ if(result.isSuccess()){
                 if (tab.getPos() == 0)
                     setTitle(tab.getTitle());
                 findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-                TextView txt = (TextView)findViewById(R.id.nombreUser);
-                TextView txt2 = (TextView)findViewById(R.id.correo);
+                TextView txt = (TextView) findViewById(R.id.nombreUser);
+                TextView txt2 = (TextView) findViewById(R.id.correo);
                 mostrarDatosDeUsuario();
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-                //Mensaje("Change");
                 DatosVentanas dv = DatosVentanas.getInstance();
                 ArrayList<Tab> tbs = dv.getBacklog();
                 vpa.getItem(viewPager.getCurrentItem());
@@ -497,7 +482,7 @@ if(result.isSuccess()){
         if (requestCode == 3434 && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            uploadFiles(getImageUri(this.getBaseContext(),imageBitmap),data.getIntExtra("pos",0));
+            uploadFiles(getImageUri(this.getBaseContext(), imageBitmap), data.getIntExtra("pos", 0));
         }
 
         if (requestCode == 123 && resultCode == Activity.RESULT_OK) {
@@ -509,13 +494,13 @@ if(result.isSuccess()){
             if (data != null) {
                 uri = data.getData();
                 Log.i("Get Files", "Uri: " + uri.toString());
-                uploadFiles(uri,0);
+                uploadFiles(uri, 0);
                 Mensaje("Concluido....");
             }
         }
     }
 
-    private void uploadFiles(Uri uri,Integer p){
+    private void uploadFiles(Uri uri, Integer p) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         String type = getContentResolver().getType(uri).split("/")[1];
@@ -525,31 +510,32 @@ if(result.isSuccess()){
         int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
         returnCursor.moveToFirst();
         String name = returnCursor.getString(nameIndex);
-        String path = String.format("files/%s",name);
+        String path = String.format("files/%s", name);
         StorageReference fileRef = storageRef.child(path);
         Uri file = uri;
         fileRef.putFile(file)
-            .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                Mensaje(exception.getMessage());
-            }})
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        Mensaje(exception.getMessage());
+                    }
+                })
 
-            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                int x = viewPager.getCurrentItem();
-                tbs.get(x).getTareas().get(p).getImagenes().add(new Image(name,downloadUrl.toString()));
-                updateTabs();
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        int x = viewPager.getCurrentItem();
+                        tbs.get(x).getTareas().get(p).getImagenes().add(new Image(name, downloadUrl.toString()));
+                        updateTabs();
 
-                Mensaje("SUCCESS");
+                        Mensaje("SUCCESS");
 
-            }
-        });
+                    }
+                });
     }
 
     private Bitmap getBitmapFromUri(Uri uri) throws IOException {
@@ -638,7 +624,7 @@ if(result.isSuccess()){
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+       /* if (id == R.id.nav_camera) {
 
         } else if (id == R.id.nav_gallery) {
 
@@ -646,10 +632,8 @@ if(result.isSuccess()){
 
         } else if (id == R.id.nav_manage) {
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else*/ if (id == R.id.nav_logOut) {
+            this.logout();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -657,12 +641,21 @@ if(result.isSuccess()){
         return true;
     }
 
-    public void mostrarDatosDeUsuario(){
-        TextView labelNombre = (TextView)findViewById(R.id.nombreUser);
-        TextView labelCorreo = (TextView)findViewById(R.id.correo);
-        if(labelNombre != null){
-            labelNombre.setText(vd.getUserlogged().getNombre());
-            labelCorreo.setText(vd.getUserlogged().getCorreo());
+    public void logout(){
+        FirebaseAuth.getInstance().signOut();
+        tbs.clear();
+        vd.reiniciarDatos();
+        vpa.notifyDataSetChanged();
+        Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(i);
+    }
+
+    public void mostrarDatosDeUsuario() {
+        TextView labelNombre = (TextView) findViewById(R.id.nombreUser);
+        TextView labelCorreo = (TextView) findViewById(R.id.correo);
+        if (labelNombre != null) {
+            labelNombre.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+            labelCorreo.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
         }
     }
 

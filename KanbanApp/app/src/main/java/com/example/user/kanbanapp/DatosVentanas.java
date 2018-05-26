@@ -1,5 +1,7 @@
 package com.example.user.kanbanapp;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -9,9 +11,10 @@ import java.util.Date;
 
 public class DatosVentanas {
 
-    private ArrayList<Tab> tabs = new ArrayList<>();
+    ArrayList<Tab> tabs = new ArrayList<>();
     Date reminder;
     User userlogged;
+    public String CURRENT_USER;
 
     private static DatosVentanas instance = null;
 
@@ -19,6 +22,7 @@ public class DatosVentanas {
     protected DatosVentanas() {
         // agregaInicial();
         userlogged = null;
+        CURRENT_USER = "";
 
     }
 
@@ -31,6 +35,10 @@ public class DatosVentanas {
             instance = new DatosVentanas();
         }
         return instance;
+    }
+
+    public void reiniciarDatos(){
+        instance = new DatosVentanas();
     }
 
     public ArrayList<Tab> getBacklog() {

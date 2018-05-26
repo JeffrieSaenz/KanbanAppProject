@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,17 +49,11 @@ public class LoginActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Views
-        //mStatusTextView = findViewById(R.id.status);
-        //mDetailTextView = findViewById(R.id.detail);
-
         // Button listeners
         findViewById(R.id.signInButton).setOnClickListener(this);
-        //findViewById(R.id.sign_out_button).setOnClickListener(this);
-        //findViewById(R.id.disconnect_button).setOnClickListener(this);
+        findViewById(R.id.salir).setOnClickListener(this);
 
-        // [START config_signin]
-        // Configure Google Sign In
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -70,6 +65,12 @@ public class LoginActivity extends AppCompatActivity implements
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
+        FirebaseUser u = mAuth.getCurrentUser();
+        if(u != null){
+            intento = new Intent(getApplicationContext(), Backlog.class);
+            startActivity(intento);
+        }
+
     }
 
     // [START on_start_check_user]
@@ -183,19 +184,16 @@ public class LoginActivity extends AppCompatActivity implements
 
     private void updateUI(FirebaseUser user) {
         //hideProgressDialog();
-/*        if (user != null) {
-            mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
-            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+        if (user != null) {
 
-            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
         } else {
-            mStatusTextView.setText(R.string.signed_out);
-            mDetailTextView.setText(null);
-
-            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
-        }*/
+            //mStatusTextView.setText(R.string.signed_out);
+            //mDetailTextView.setText(null);
+            //Button bn = (Button)findViewById(R.id.signInButton);
+            //bn.setText("Entrar");
+            //findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+            //findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -204,11 +202,9 @@ public class LoginActivity extends AppCompatActivity implements
         if (i == R.id.signInButton) {
             signIn();
         }
-        /*else if (i == R.id.sign_out_button) {
+        else if (i == R.id.salir) {
             signOut();
-        } else if (i == R.id.disconnect_button) {
-            revokeAccess();
-        }*/
+        }
     }
 
     public void Mensaje(String msg){
@@ -225,4 +221,7 @@ public class LoginActivity extends AppCompatActivity implements
         AlertDialog alert11 = builder1.create();
         alert11.show();
         ;};
+
+
+
 }

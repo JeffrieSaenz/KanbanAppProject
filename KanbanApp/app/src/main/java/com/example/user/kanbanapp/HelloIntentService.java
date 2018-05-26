@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -82,7 +83,7 @@ public class HelloIntentService extends IntentService {
 
     public void readTabs() {
 
-        DatabaseReference mtabs = FirebaseDatabase.getInstance().getReference("tabs");
+        DatabaseReference mtabs = FirebaseDatabase.getInstance().getReference(FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0]);
 
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
