@@ -55,7 +55,7 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Backlog extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
+public class Backlog extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
     /*
         TareaAdapter adapter;
@@ -86,7 +86,7 @@ public class Backlog extends AppCompatActivity  implements NavigationView.OnNavi
 
 
 
-/*Nuevo*/
+        /*Nuevo*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -98,14 +98,12 @@ public class Backlog extends AppCompatActivity  implements NavigationView.OnNavi
         navigationView.setNavigationItemSelectedListener(this);
 
 
-
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
 
 
         googleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this,this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API,gso).build();
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
 
         /*NUEVO*/
 
@@ -144,31 +142,30 @@ public class Backlog extends AppCompatActivity  implements NavigationView.OnNavi
         });
 
 
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         vd = DatosVentanas.getInstance();
-TextView txt = (TextView) findViewById(R.id.nombreUser);
+        TextView txt = (TextView) findViewById(R.id.nombreUser);
         Intent callingIntent = getIntent();
         //txt.setText(callingIntent.getStringExtra("user"));
         //txt2.setText(callingIntent.getStringExtra("email"));
         //Nuevo
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
-    if(opr.isDone()){
-    //GoogleSignInResult result = opr.get();
-    //handleSignInResult(result);
+        if (opr.isDone()) {
+            //GoogleSignInResult result = opr.get();
+            //handleSignInResult(result);
 
-    }else{
-    opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-    @Override
-    public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
-        handleSignInResult(googleSignInResult);
-    }
-});
-}
+        } else {
+            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                @Override
+                public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
+                    handleSignInResult(googleSignInResult);
+                }
+            });
+        }
         updateTabs();
 
         Intent intent = new Intent(this, HelloIntentService.class);
@@ -176,17 +173,17 @@ TextView txt = (TextView) findViewById(R.id.nombreUser);
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-if(result.isSuccess()){
+        if (result.isSuccess()) {
 
-    TextView txt = (TextView)findViewById(R.id.nombreUser);
-    TextView txt2 = (TextView)findViewById(R.id.correo);
-    GoogleSignInAccount g = result.getSignInAccount();
-    //Mensaje(g.getDisplayName()+", "+g.getEmail());
-    txt.setText(g.getDisplayName());
-    txt2.setText(g.getEmail());
-}else{
-    Mensaje("No entró success");
-}
+            TextView txt = (TextView) findViewById(R.id.nombreUser);
+            TextView txt2 = (TextView) findViewById(R.id.correo);
+            GoogleSignInAccount g = result.getSignInAccount();
+            //Mensaje(g.getDisplayName()+", "+g.getEmail());
+            txt.setText(g.getDisplayName());
+            txt2.setText(g.getEmail());
+        } else {
+            Mensaje("No entró success");
+        }
     }
 
 
@@ -211,12 +208,12 @@ if(result.isSuccess()){
         super.onResume();
 
         vd = DatosVentanas.getInstance();
-        TextView txt = (TextView)findViewById(R.id.nombreUser);
-        TextView txt2 = (TextView)findViewById(R.id.correo);
-        if(txt != null) {
+        TextView txt = (TextView) findViewById(R.id.nombreUser);
+        TextView txt2 = (TextView) findViewById(R.id.correo);
+        if (txt != null) {
             txt.setText(vd.getUserlogged().getNombre());
             txt2.setText(vd.getUserlogged().getCorreo());
-        }else{
+        } else {
             Mensaje("nulllll");
         }
 
@@ -422,8 +419,8 @@ if(result.isSuccess()){
                 if (tab.getPos() == 0)
                     setTitle(tab.getTitle());
                 findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-                TextView txt = (TextView)findViewById(R.id.nombreUser);
-                TextView txt2 = (TextView)findViewById(R.id.correo);
+                TextView txt = (TextView) findViewById(R.id.nombreUser);
+                TextView txt2 = (TextView) findViewById(R.id.correo);
                 mostrarDatosDeUsuario();
             }
 
@@ -505,7 +502,7 @@ if(result.isSuccess()){
         }
     }
 
-    private void uploadFiles(Uri uri,Integer p){
+    private void uploadFiles(Uri uri, Integer p) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         String type = getContentResolver().getType(uri).split("/")[1];
@@ -515,16 +512,17 @@ if(result.isSuccess()){
         int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
         returnCursor.moveToFirst();
         String name = returnCursor.getString(nameIndex);
-        String path = String.format("files/%s",name);
+        String path = String.format("files/%s", name);
         StorageReference fileRef = storageRef.child(path);
         Uri file = uri;
         fileRef.putFile(file)
-            .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                Mensaje(exception.getMessage());
-            }})
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        Mensaje(exception.getMessage());
+                    }
+                })
 
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -534,12 +532,11 @@ if(result.isSuccess()){
                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
                         int x = viewPager.getCurrentItem();
 
-                        if(tbs.get(x).getTareas().get(p).getListFiles() == null){
+                        if (tbs.get(x).getTareas().get(p).getListFiles() == null) {
                             ArrayList<File> files = new ArrayList<>();
                             files.add(new File(name, downloadUrl.toString()));
                             tbs.get(x).getTareas().get(p).setListFiles(files);
-                        }
-                        else{
+                        } else {
                             ArrayList<File> files = tbs.get(x).getTareas().get(p).getListFiles();
                             files.add(new File(name, downloadUrl.toString()));
                             tbs.get(x).getTareas().get(p).setListFiles(files);
@@ -656,10 +653,10 @@ if(result.isSuccess()){
         return true;
     }
 
-    public void mostrarDatosDeUsuario(){
-        TextView labelNombre = (TextView)findViewById(R.id.nombreUser);
-        TextView labelCorreo = (TextView)findViewById(R.id.correo);
-        if(labelNombre != null){
+    public void mostrarDatosDeUsuario() {
+        TextView labelNombre = (TextView) findViewById(R.id.nombreUser);
+        TextView labelCorreo = (TextView) findViewById(R.id.correo);
+        if (labelNombre != null) {
             labelNombre.setText(vd.getUserlogged().getNombre());
             labelCorreo.setText(vd.getUserlogged().getCorreo());
         }
