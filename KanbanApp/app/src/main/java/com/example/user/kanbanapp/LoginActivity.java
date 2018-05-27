@@ -51,7 +51,6 @@ public class LoginActivity extends AppCompatActivity implements
 
         // Button listeners
         findViewById(R.id.signInButton).setOnClickListener(this);
-        findViewById(R.id.salir).setOnClickListener(this);
 
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -69,6 +68,8 @@ public class LoginActivity extends AppCompatActivity implements
         if(u != null){
             intento = new Intent(getApplicationContext(), Backlog.class);
             startActivity(intento);
+        }else{
+            signOut();
         }
 
     }
@@ -204,9 +205,7 @@ public class LoginActivity extends AppCompatActivity implements
         if (i == R.id.signInButton) {
             signIn();
         }
-        else if (i == R.id.salir) {
-            signOut();
-        }
+
     }
 
     public void Mensaje(String msg){

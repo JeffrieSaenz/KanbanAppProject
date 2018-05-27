@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -59,9 +60,7 @@ public class TareaInfo extends AppCompatActivity {
         //int tar = callingIntent.getIntExtra("pos", 1);
         tbs = new ArrayList<>();
         ViewPagerAdapter vpa_db = new ViewPagerAdapter(getSupportFragmentManager());
-        DatosVentanas dv = DatosVentanas.getInstance();
-        String base = dv.getUserlogged().getCorreo().split("@")[0];
-        DatabaseReference mtabs = FirebaseDatabase.getInstance().getReference(base);
+        DatabaseReference mtabs = FirebaseDatabase.getInstance().getReference(FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0]);
         mtabs.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

@@ -71,7 +71,7 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
     private ViewPagerAdapter vpa_aux;
     static EditText nombreImagen;
     private FirebaseAuth mAuth;
-    private Intent intento;
+    private Intent serviceNotifications;
 
     private GoogleApiClient googleApiClient;
 
@@ -183,8 +183,8 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
         updateTabs();
 
         checkPermission(0);
-        Intent intent = new Intent(this, HelloIntentService.class);
-        startService(intent);
+        serviceNotifications = new Intent(this, HelloIntentService.class);
+        startService(serviceNotifications);
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
@@ -505,10 +505,16 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
             Uri uri = null;
             if (data != null) {
                 uri = data.getData();
-                Log.i("Get Files", "Uri: " + uri.toString());
-               int pos = requestCode;
-                uploadFiles(uri, pos);
+                int pos = requestCode;
+                if(uri == null) {
+                    Bundle extras = data.getExtras();
+                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    uploadFiles(getImageUri(this.getBaseContext(), imageBitmap), pos);
+                }else {
+                    Log.i("Get Files", "Uri: " + uri.toString());
 
+                    uploadFiles(uri, pos);
+                }
 
                 Mensaje("Concluido....");
             }
@@ -670,6 +676,7 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
         tbs.clear();
         vd.reiniciarDatos();
         vpa.notifyDataSetChanged();
+        stopService(new Intent(Backlog.this, HelloIntentService.class));
         Intent i = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(i);
     }

@@ -72,7 +72,12 @@ public class HelloIntentService extends IntentService {
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    validarFechas();
+                    if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+                        validarFechas();
+                    }else{
+                        tareas.clear();
+                        Thread.currentThread().interrupt();
+                    }
                 }
             }, 5*1000, 5*1000);
         } catch (Exception e) {
