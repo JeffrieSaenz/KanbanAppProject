@@ -29,6 +29,7 @@ import java.util.TimerTask;
 
 public class HelloIntentService extends IntentService {
 
+    static String ns = Context.NOTIFICATION_SERVICE;
     ArrayList<Tarea> tareas;
     Timer timer = new Timer();
     Tab tab;
@@ -79,7 +80,7 @@ public class HelloIntentService extends IntentService {
                         Thread.currentThread().interrupt();
                     }
                 }
-            }, 5*1000, 5*1000);
+            }, 5*1000, 5*10000);
         } catch (Exception e) {
             // Restore interrupt status.
             Thread.currentThread().interrupt();
@@ -140,6 +141,8 @@ public class HelloIntentService extends IntentService {
 
     public void validarFechas(){
         fechaHoy = new Date();
+        NotificationManager nm = nm = (NotificationManager) getSystemService(ns);
+        nm.cancelAll();
         for (Tarea t : tareas){
             if(fechaHoy.after(t.getFecha())){
                 System.out.println("La fecha "+ t.getFecha() +" está vencida");

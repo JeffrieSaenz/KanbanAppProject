@@ -512,10 +512,8 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
                     uploadFiles(getImageUri(this.getBaseContext(), imageBitmap), pos);
                 }else {
                     Log.i("Get Files", "Uri: " + uri.toString());
-
                     uploadFiles(uri, pos);
                 }
-
                 Mensaje("Concluido....");
             }
         }

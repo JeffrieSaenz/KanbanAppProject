@@ -5,8 +5,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.StrictMode;
+import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,6 +30,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -48,6 +52,10 @@ public class TareaInfo extends AppCompatActivity {
         readTabs();
         //addImages();
         //readImages();
+
+        // alambramos el ImageView
+        ImageView MiImageView = (ImageView) findViewById(R.id.imagen);
+        //Programamos el evento onclick
     }
 
     public void initPagerAdapter() {
@@ -178,9 +186,9 @@ public class TareaInfo extends AppCompatActivity {
             }
             File ObjetoActual = images.get(position);
             // Fill the view
-            ImageView im = (ImageView) itemView.findViewById(R.id.imageViewI);
+            ImageView im = (ImageView) itemView.findViewById(R.id.imagen);
 
-            URL imageUrl = null;
+            final URL imageUrl;
             HttpURLConnection conn = null;
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -190,14 +198,41 @@ public class TareaInfo extends AppCompatActivity {
                 conn.connect();
                 Bitmap imagen = BitmapFactory.decodeStream(conn.getInputStream());
                 im.setImageBitmap(imagen);
+                // alambramos el ImageView
+
+                // alambramos el ImageView
+                //ImageView MiImageView = (ImageView) findViewById(R.id.btnNombreControl);
+
+                //Programamos el evento onclick
+
+                im.setOnClickListener(new View.OnClickListener(){
+
+                    @Override
+
+                    public void onClick(View arg0) {
+                        // escriba lo que desea hacer
+                        /*String query = imageUrl.getQuery();
+                        Intent intento = new Intent(getApplicationContext(), ViewFile.class);
+                        intento.putExtra("url", ObjetoActual.getLink());
+                        //intento.putExtra("hijos", 3);
+                        startActivity(intento);*/
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+
+                        intent.setDataAndType(Uri.parse( ObjetoActual.getLink()), "text/html");
+
+                        startActivity(intent);
+                    }
+
+                });
             } catch (IOException e) {
 
                 e.printStackTrace();
             }
-            TextView elatributo01 = (TextView) itemView.findViewById(R.id.paraelatributo01);
+            TextView elatributo01 = (TextView) itemView.findViewById(R.id.name);
             elatributo01.setText(ObjetoActual.getName());
             return itemView;
         }
+
     }
 
 }
