@@ -98,7 +98,7 @@ public class LoginActivity extends AppCompatActivity implements
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Mensaje("Google sign in failed");
+                //Mensaje("Google sign in failed");
                 Log.w(TAG, "Google sign in failed", e);
                 // [START_EXCLUDE]
                 updateUI(null);
@@ -123,7 +123,7 @@ public class LoginActivity extends AppCompatActivity implements
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Mensaje("signInWithCredential:success");
+                           // Mensaje("signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             //Mensaje(user.getDisplayName());
                             dv.loguearUsuario(new User(user.getDisplayName(), user.getEmail()));
@@ -136,7 +136,7 @@ public class LoginActivity extends AppCompatActivity implements
                             }
                         } else {
                             // If sign in fails, display a message to the user.
-                            Mensaje("signInWithCredential:failure");
+                           // Mensaje("signInWithCredential:failure");
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             //Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                             updateUI(null);

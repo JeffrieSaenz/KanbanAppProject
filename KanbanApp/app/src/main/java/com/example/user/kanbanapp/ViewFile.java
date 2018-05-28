@@ -10,6 +10,7 @@ import android.webkit.WebViewClient;
 
 public class ViewFile extends AppCompatActivity {
     ProgressDialog pDialog;
+
     WebView webview ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

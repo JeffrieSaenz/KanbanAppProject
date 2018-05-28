@@ -3,6 +3,7 @@ package com.example.user.kanbanapp;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -63,6 +64,7 @@ import java.util.ArrayList;
 public class Backlog extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
     DatosVentanas vd;
+    ProgressDialog pDialog;
 
     public ViewPagerAdapter vpa;
     public ViewPager viewPager;
@@ -78,7 +80,7 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Mensaje("onCreate");
+        //Mensaje("onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_backlog);
         Intent intento = new Intent();
@@ -210,7 +212,7 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
     @Override
     protected void onRestart() {
         super.onRestart();
-        Mensaje("onRestart");
+       // Mensaje("onRestart");
         // addFragment();
         //addFIni();
     }
@@ -260,8 +262,12 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
                 //Intent intento = new Intent(getApplicationContext(), IngresoNuevaTarea.class);
                 //startActivity(intento);
                 break;
+            case R.id.integ:
+                Intent intento = new Intent(getApplicationContext(), Integrantes.class);
+                startActivity(intento);
+                break;
             default:
-                Mensaje("No clasificado");
+                //Mensaje("No clasificado");
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -297,7 +303,7 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
         conn = FbConnection.getInstance();
         //conn.readTabs();
         ArrayList<Tab> tbs = conn.getTabs();
-        Mensaje("TABS:" + tbs.size());
+        //Mensaje("TABS:" + tbs.size());
         if (tbs.isEmpty())
             addFIni();
         else {
@@ -514,7 +520,7 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
                     Log.i("Get Files", "Uri: " + uri.toString());
                     uploadFiles(uri, pos);
                 }
-                Mensaje("Concluido....");
+                //Mensaje("Concluido....");
             }
         }
     }
@@ -532,12 +538,19 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
         String path = String.format("files/%s", name);
         StorageReference fileRef = storageRef.child(path);
         Uri file = uri;
+        pDialog = new ProgressDialog(this);
+        //pDialog.setTitle("PDF");
+        pDialog.setMessage("Loading...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
         fileRef.putFile(file)
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Handle unsuccessful uploads
-                        Mensaje(exception.getMessage());
+                        //Mensaje(exception.getMessage());
+                        pDialog.dismiss();
                     }
                 })
 
@@ -560,8 +573,8 @@ public class Backlog extends AppCompatActivity implements NavigationView.OnNavig
                             //.add(new File(name, downloadUrl.toString()));
                         }
                         updateTabs();
-                        Mensaje("SUCCESS");
-
+                        //Mensaje("SUCCESS");
+                        pDialog.dismiss();
                     }
                 });
     }
